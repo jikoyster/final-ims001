@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="ims001PU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>accounts.customers.Customers</class>
+    <class>accounts.users.UserType</class>
+    <class>accounts.users.Users</class>
+    <class>warehouse.Warehouse</class>
+    <class>warehouse.priceCode.PriceCode</class>
+    <class>warehouse.category.Category</class>
+    <class>accounts.suppliers.Suppliers</class>
+    <class>warehouse.stocks.Category</class>
+    <class>warehouse.stocks.SimpleStocks</class>
+    <class>warehouse.stocks.Stocks</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/dbims"/>
+      <property name="javax.persistence.jdbc.user" value="dbims_admin"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.password" value="DB!M$_5DM!N"/>
+    </properties>
+  </persistence-unit>
+</persistence>

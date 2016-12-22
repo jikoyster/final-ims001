@@ -1,0 +1,8 @@
+#database credentials
+#dbname .= dbpath
+#username .= jake
+#password .= password
+
+dbname = dbims
+username = dbims_admin
+password = DB!M$_5DM!N
