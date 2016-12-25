@@ -101,7 +101,12 @@ public class StocksEditorPanel extends javax.swing.JPanel {
     }
     public void set_netPrice(double netPrice){
 //        this.netPriceTF.setText(String.format("%,.2f", netPrice));
-        this.netPriceTF.setText( String.format("%,.2f", this.compute_netPrice()) );
+        String STR_netPrice = String.format("%,.2f", this.compute_netPrice());
+        this.netPriceTF.setText( STR_netPrice );
+        
+        //set WPrice and RPrice to net price by default
+        this.wholesalePriceTF.setText( STR_netPrice );
+        this.retailPriceTF.setText( STR_netPrice );
     }
     
     public void set_wholesaleMarkupPercentage(int wMarkup){
@@ -491,7 +496,8 @@ public class StocksEditorPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_lessTFKeyPressed
 
     private void lessTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lessTFKeyReleased
-        this.netPriceTF.setText( String.format("%,.2f", this.compute_netPrice()) );
+//        this.netPriceTF.setText( String.format("%,.2f", this.compute_netPrice()) );
+        this.set_netPrice( this.compute_netPrice() );
     }//GEN-LAST:event_lessTFKeyReleased
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

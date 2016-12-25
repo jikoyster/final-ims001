@@ -1,14 +1,13 @@
-Fri Dec 23 02:14:59 CST 2016 : Apache Derby Network Server - 10.11.1.2 - (1629631) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Fri Dec 23 02:14:59 CST 2016:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-0159-27be-49f8-00000977a51c 
-on database directory D:\Ozamiz\projects\final\Ims001\dbims with class loader sun.misc.Launcher$AppClassLoader@5e2de80c 
+Mon Dec 26 02:48:31 CST 2016:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-0159-3750-10a7-000002fa8188 
+on database directory D:\Ozamiz\projects\final\Ims001\dbims with class loader sun.misc.Launcher$AppClassLoader@66d3c617 
 Loaded from file:/C:/Program%20Files/Java/jdk1.8.0_73/db/lib/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_73-b02
-user.dir=C:\Program Files\Java\jdk1.8.0_73\db
+user.dir=D:\Ozamiz\projects\final\Ims001
 os.name=Windows 10
 os.arch=amd64
 os.version=10.0
-derby.system.home=D:\Ozamiz\projects\final\Ims001
+derby.system.home=null
 Database Class Loader started - derby.database.classpath=''
