@@ -12,6 +12,8 @@
     <class>warehouse.stocks.Category</class>
     <class>warehouse.stocks.SimpleStocks</class>
     <class>warehouse.stocks.Stocks</class>
+    <class>transactions.invoices.InvoiceItems</class>
+    <class>transactions.invoices.Invoices</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/dbims"/>
       <property name="javax.persistence.jdbc.user" value="dbims_admin"/>

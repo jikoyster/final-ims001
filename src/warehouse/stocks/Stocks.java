@@ -6,6 +6,7 @@
 package warehouse.stocks;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -15,10 +16,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import transactions.invoices.InvoiceItems;
 import warehouse.Warehouse;
 import warehouse.category.Category;
 
@@ -46,6 +50,9 @@ import warehouse.category.Category;
     @NamedQuery(name = "Stocks.findByCriticalLevel", query = "SELECT s FROM Stocks s WHERE s.criticalLevel = :criticalLevel"),
     @NamedQuery(name = "Stocks.findByBalance", query = "SELECT s FROM Stocks s WHERE s.balance = :balance")})
 public class Stocks implements Serializable {
+
+    @OneToMany(mappedBy = "code")
+    private Collection<InvoiceItems> invoiceItemsCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -255,6 +262,15 @@ public class Stocks implements Serializable {
     @Override
     public String toString() {
         return "warehouse.stocks.Stocks[ code=" + code + " ]";
+    }
+
+    @XmlTransient
+    public Collection<InvoiceItems> getInvoiceItemsCollection() {
+        return invoiceItemsCollection;
+    }
+
+    public void setInvoiceItemsCollection(Collection<InvoiceItems> invoiceItemsCollection) {
+        this.invoiceItemsCollection = invoiceItemsCollection;
     }
     
 }

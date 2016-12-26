@@ -161,7 +161,7 @@ public class Mainframe extends javax.swing.JFrame {
         transactionsM.add(invoiceMI);
 
         warehouseMI2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        warehouseMI2.setMnemonic('i');
+        warehouseMI2.setMnemonic('o');
         warehouseMI2.setText("Orders");
         warehouseMI2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -416,7 +416,21 @@ public class Mainframe extends javax.swing.JFrame {
     }//GEN-LAST:event_transactionsMMenuSelected
 
     private void invoiceMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_invoiceMIActionPerformed
-        // TODO add your handling code here:
+        try {
+            this.mainPanel.setVisible(false);
+            if( this.currentPanel != null){
+                this.currentPanel.removeAll();
+            }
+            
+            this.currentPanel = new transactions.invoices.InvoicesPanel(this.conn);
+            getContentPane().add(this.currentPanel);
+            
+            validate();
+            repaint();
+        } catch (Exception e) {
+            System.out.println("INVOICES PAGE");
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_invoiceMIActionPerformed
 
     private void warehouseMI2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warehouseMI2ActionPerformed
