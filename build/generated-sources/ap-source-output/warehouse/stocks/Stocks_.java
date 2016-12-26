@@ -2,12 +2,14 @@ package warehouse.stocks;
 
 import java.util.Date;
 import javax.annotation.Generated;
+import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
+import transactions.invoices.InvoiceItems;
 import warehouse.Warehouse;
 import warehouse.category.Category;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-12-26T23:57:51")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-12-27T02:07:27")
 @StaticMetamodel(Stocks.class)
 public class Stocks_ { 
 
@@ -24,6 +26,7 @@ public class Stocks_ {
     public static volatile SingularAttribute<Stocks, Integer> wholesaleMarkupPercentage;
     public static volatile SingularAttribute<Stocks, Integer> retailMarkupPercentage;
     public static volatile SingularAttribute<Stocks, String> name;
+    public static volatile CollectionAttribute<Stocks, InvoiceItems> invoiceItemsCollection;
     public static volatile SingularAttribute<Stocks, Category> category;
     public static volatile SingularAttribute<Stocks, Double> wholesalePrice;
     public static volatile SingularAttribute<Stocks, Double> retailPrice;
