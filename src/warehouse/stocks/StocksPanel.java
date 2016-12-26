@@ -37,8 +37,8 @@ public class StocksPanel extends javax.swing.JPanel {
     private ResultSet rs = null;
     private Statement statement = null;
     
-    private String table1 = "STOCKS";
-    private String table2 = "CATEGORY";
+    private String tblStocks = "STOCKS";
+    private String tblCategory = "CATEGORY";
     private String tblWarehouse = "WAREHOUSE";
     /**
      * Creates new form CustomersPanel
@@ -57,10 +57,10 @@ public class StocksPanel extends javax.swing.JPanel {
     
     void update_table(){
         try { 
-            String sql = "SELECT "+table1+".CODE as CODE, "+table1+".NAME, "+table2+".NAME as CATEGORY, "+tblWarehouse+".NAME as WAREHOUSE, UNIT, AMOUNT_PER_UNIT, WHOLESALE_PRICE, RETAIL_PRICE, "+table1+".DATEADDED as Date "
-                    + "FROM "+table1 +", "+table2+", "+ tblWarehouse +" "
-                    + "WHERE "+table1+".CATEGORY="+table2+".ID "
-                    + "AND "+table1+".WAREHOUSE="+tblWarehouse+".CODE ";
+            String sql = "SELECT "+tblStocks+".CODE as CODE, "+tblStocks+".NAME, "+tblCategory+".NAME as CATEGORY, "+tblWarehouse+".NAME as WAREHOUSE, UNIT, AMOUNT_PER_UNIT, CRITICAL_LEVEL, BALANCE, WHOLESALE_PRICE, RETAIL_PRICE, "+tblStocks+".DATEADDED as Date "
+                    + "FROM "+tblStocks +", "+tblCategory+", "+ tblWarehouse +" "
+                    + "WHERE "+tblStocks+".CATEGORY="+tblCategory+".ID "
+                    + "AND "+tblStocks+".WAREHOUSE="+tblWarehouse+".CODE ";
             System.out.println(sql);
             rs = statement.executeQuery(sql);
                 
@@ -228,6 +228,9 @@ public class StocksPanel extends javax.swing.JPanel {
                 newStock.setWarehouse(new Warehouse(warehouseCode));
                 newStock.setUnit(panel.get_unit());
                 newStock.setAmountPerUnit(panel.get_amountPerUnit());
+                newStock.setCriticalLevel(panel.get_criticalLevel());
+                newStock.setBalance(panel.get_balance());
+                
                 newStock.setCost(panel.get_cost());
                 newStock.setLess(panel.get_less());
                 newStock.setNetPrice(panel.get_netPrice());
@@ -236,12 +239,12 @@ public class StocksPanel extends javax.swing.JPanel {
                 newStock.setRetailMarkupPercentage(panel.get_retailMarkupPercentage());
                 newStock.setRetailPrice(panel.get_retailPrice());
             
-                String sql = "INSERT INTO "+table1+" "
-                        + "(CODE, NAME, CATEGORY, WAREHOUSE, UNIT, AMOUNT_PER_UNIT, "
+                String sql = "INSERT INTO "+tblStocks+" "
+                        + "(CODE, NAME, CATEGORY, WAREHOUSE, UNIT, AMOUNT_PER_UNIT, CRITICAL_LEVEL, BALANCE, "
                         + "COST, LESS, NET_PRICE, "
                         + "WHOLESALE_MARKUP_PERCENTAGE, WHOLESALE_PRICE, RETAIL_MARKUP_PERCENTAGE, RETAIL_PRICE, "
                         + "DATEADDED) "
-                        + "VALUES ('"+newStock.getCode()+"', '"+newStock.getName()+"', "+newStock.getCategory().getId()+", '"+newStock.getWarehouse().getCode()+"', '"+newStock.getUnit()+"', "+newStock.getAmountPerUnit()+", "
+                        + "VALUES ('"+newStock.getCode()+"', '"+newStock.getName()+"', "+newStock.getCategory().getId()+", '"+newStock.getWarehouse().getCode()+"', '"+newStock.getUnit()+"', "+newStock.getAmountPerUnit()+", "+newStock.getCriticalLevel()+", "+newStock.getBalance()+", "
                         + newStock.getCost()+", "+newStock.getLess()+", "+newStock.getNetPrice()+", "
                         + newStock.getWholesaleMarkupPercentage()+", "+newStock.getWholesalePrice()+", "+newStock.getRetailMarkupPercentage()+", "+newStock.getRetailPrice()+", "
                         + "CURRENT_TIMESTAMP)";
@@ -275,6 +278,9 @@ public class StocksPanel extends javax.swing.JPanel {
             panel.set_warehouse(selectedStock.getWarehouse());
             panel.set_unit(selectedStock.getUnit());
             panel.set_amountPerUnit(selectedStock.getAmountPerUnit());
+            panel.set_criticalLevel(selectedStock.getCriticalLevel());
+            panel.set_balance(selectedStock.getBalance());
+            
             
             panel.set_cost(selectedStock.getCost());
             panel.set_less(selectedStock.getLess());
@@ -292,10 +298,11 @@ public class StocksPanel extends javax.swing.JPanel {
             null, options, null);
         if( returnVal == 0 ){
             try {
-                String sql = "UPDATE "+table1 
+                String sql = "UPDATE "+tblStocks 
                         + " SET CODE='"+panel.get_code()+"', NAME='"+panel.get_productName()+"', CATEGORY="+this.get_categoryId(panel.get_category())+", WAREHOUSE='"+this.get_warehouseCode(panel.get_warehouse())+"',"
-                        + " UNIT='"+panel.get_unit()+"', AMOUNT_PER_UNIT="+panel.get_amountPerUnit()+","
-                        + " COST="+panel.get_cost()+", LESS="+panel.get_less()+", NET_PRICE="+panel.get_netPrice()+","
+                        + " UNIT='"+panel.get_unit()+"', AMOUNT_PER_UNIT="+panel.get_amountPerUnit()+", "
+                        + " COST="+panel.get_cost()+", LESS="+panel.get_less()+", NET_PRICE="+panel.get_netPrice()+", "
+                        + " CRITICAL_LEVEL="+panel.get_criticalLevel()+", BALANCE="+panel.get_balance()+", "
                         + " WHOLESALE_MARKUP_PERCENTAGE="+panel.get_wholesaleMarkupPercentage()+", WHOLESALE_PRICE="+panel.get_wholesalePrice()+","
                         + " RETAIL_MARKUP_PERCENTAGE="+panel.get_retailMarkupPercentage()+", RETAIL_PRICE="+panel.get_retailPrice()
                         + " WHERE CODE='"+selectedStock.getCode()+"'";
@@ -312,7 +319,7 @@ public class StocksPanel extends javax.swing.JPanel {
         try {
             int srow = this.StocksTable.getSelectedRow();
             String code = String.valueOf( this.StocksTable.getValueAt(srow, 0) );
-            String sql = "DELETE FROM "+table1+" WHERE CODE='"+code+"'";
+            String sql = "DELETE FROM "+tblStocks+" WHERE CODE='"+code+"'";
             System.out.println(sql);
             statement.execute(sql);
         } catch (SQLException ex) {
@@ -324,7 +331,7 @@ public class StocksPanel extends javax.swing.JPanel {
     public int get_categoryId(String strCat){
         int catId = 0;
         try {
-            rs = this.statement.executeQuery("SELECT ID FROM "+ this.table2 +" WHERE NAME='"+strCat+"'");
+            rs = this.statement.executeQuery("SELECT ID FROM "+ this.tblCategory +" WHERE NAME='"+strCat+"'");
             while(rs.next()){ 
                 catId = rs.getInt("ID"); 
             }
@@ -352,7 +359,7 @@ public class StocksPanel extends javax.swing.JPanel {
     public String get_categoryName(int id){
         String name = "";
         try {
-            rs = this.statement.executeQuery("SELECT NAME FROM "+ this.table2 +" WHERE ID="+id);
+            rs = this.statement.executeQuery("SELECT NAME FROM "+ this.tblCategory +" WHERE ID="+id);
             while(rs.next()){ 
                 name = rs.getString("NAME"); 
             }
@@ -382,7 +389,7 @@ public class StocksPanel extends javax.swing.JPanel {
         Stocks stock = new Stocks();
         
         try {
-            String sql = "SELECT * FROM "+table1+" WHERE CODE='"+code+"'";
+            String sql = "SELECT * FROM "+tblStocks+" WHERE CODE='"+code+"'";
                 System.out.println("udpate: "+sql);
             rs = this.statement.executeQuery(sql);
             
@@ -391,6 +398,9 @@ public class StocksPanel extends javax.swing.JPanel {
                 stock.setName(rs.getString("NAME"));
                 stock.setUnit(rs.getString("UNIT"));
                 stock.setAmountPerUnit(rs.getInt("AMOUNT_PER_UNIT"));
+                stock.setCriticalLevel(rs.getInt("CRITICAL_LEVEL"));
+                stock.setBalance(rs.getInt("BALANCE"));
+                
                 stock.setCost(rs.getDouble("COST"));
                 stock.setLess(rs.getInt("LESS"));
                 stock.setNetPrice(rs.getDouble("NET_PRICE"));

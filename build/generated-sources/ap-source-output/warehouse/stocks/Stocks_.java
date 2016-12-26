@@ -7,7 +7,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 import warehouse.Warehouse;
 import warehouse.category.Category;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-12-26T22:48:53")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-12-26T23:57:51")
 @StaticMetamodel(Stocks.class)
 public class Stocks_ { 
 
@@ -20,6 +20,7 @@ public class Stocks_ {
     public static volatile SingularAttribute<Stocks, Date> dateadded;
     public static volatile SingularAttribute<Stocks, Integer> criticalLevel;
     public static volatile SingularAttribute<Stocks, String> unit;
+    public static volatile SingularAttribute<Stocks, Integer> balance;
     public static volatile SingularAttribute<Stocks, Integer> wholesaleMarkupPercentage;
     public static volatile SingularAttribute<Stocks, Integer> retailMarkupPercentage;
     public static volatile SingularAttribute<Stocks, String> name;

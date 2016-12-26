@@ -43,7 +43,8 @@ import warehouse.category.Category;
     @NamedQuery(name = "Stocks.findByRetailMarkupPercentage", query = "SELECT s FROM Stocks s WHERE s.retailMarkupPercentage = :retailMarkupPercentage"),
     @NamedQuery(name = "Stocks.findByRetailPrice", query = "SELECT s FROM Stocks s WHERE s.retailPrice = :retailPrice"),
     @NamedQuery(name = "Stocks.findByDateadded", query = "SELECT s FROM Stocks s WHERE s.dateadded = :dateadded"),
-    @NamedQuery(name = "Stocks.findByCriticalLevel", query = "SELECT s FROM Stocks s WHERE s.criticalLevel = :criticalLevel")})
+    @NamedQuery(name = "Stocks.findByCriticalLevel", query = "SELECT s FROM Stocks s WHERE s.criticalLevel = :criticalLevel"),
+    @NamedQuery(name = "Stocks.findByBalance", query = "SELECT s FROM Stocks s WHERE s.balance = :balance")})
 public class Stocks implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -79,6 +80,9 @@ public class Stocks implements Serializable {
     @Basic(optional = false)
     @Column(name = "CRITICAL_LEVEL")
     private int criticalLevel;
+    @Basic(optional = false)
+    @Column(name = "BALANCE")
+    private int balance;
     @JoinColumn(name = "CATEGORY", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Category category;
@@ -93,10 +97,11 @@ public class Stocks implements Serializable {
         this.code = code;
     }
 
-    public Stocks(String code, Date dateadded, int criticalLevel) {
+    public Stocks(String code, Date dateadded, int criticalLevel, int balance) {
         this.code = code;
         this.dateadded = dateadded;
         this.criticalLevel = criticalLevel;
+        this.balance = balance;
     }
 
     public String getCode() {
@@ -201,6 +206,14 @@ public class Stocks implements Serializable {
 
     public void setCriticalLevel(int criticalLevel) {
         this.criticalLevel = criticalLevel;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
     }
 
     public Category getCategory() {
