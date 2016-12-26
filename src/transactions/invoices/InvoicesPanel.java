@@ -5,7 +5,6 @@
  */
 package transactions.invoices;
 
-import warehouse.*;
 import accounts.customers.*;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -39,7 +38,7 @@ public class InvoicesPanel extends javax.swing.JPanel {
     private ResultSet rs = null;
     private Statement statement = null;
     
-    private String table = "WAREHOUSE";
+    private String tblInvoices = "INVOICES";
     /**
      * Creates new form CustomersPanel
      */
@@ -57,48 +56,36 @@ public class InvoicesPanel extends javax.swing.JPanel {
     
     void update_table(){
         try { 
-            rs = statement.executeQuery(""
-                    + "SELECT CODE, NAME, ADDRESS, "
-                    + "PHONE, FAX, EMAIL, DATEADDED as Date "
-                    + "from "+table );
-//            this.CustomersTable.setModel( DbUtils.resultSetToTableModel(rs) );
+            String sql = ""
+                    + "SELECT ID, TOTAL_AMOUNT, DATEADDED as DATE, CUSTOMER "
+                    + "FROM "+tblInvoices;
+            System.out.println(sql);
+            rs = statement.executeQuery(sql);
+            
 
-
-            DefaultTableModel model = (DefaultTableModel) this.WarehouseTable.getModel();
+            DefaultTableModel model = (DefaultTableModel) this.InvoicesTable.getModel();
             model.setRowCount(0); //clearn table
             while( rs.next() ){
                Object[] rowData = {
-                                    rs.getString("CODE"), 
-                                    rs.getString("NAME"), 
-                                    "<HTML>"+ (rs.getString("ADDRESS")).replace("\n", "<BR>") +"</HTML>", 
-                                    rs.getString("PHONE"),
-                                    rs.getString("FAX"),
-                                    rs.getString("EMAIL"),
-                                    "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
+                                    rs.getString("ID"), 
+                                    rs.getString("TOTAL_AMOUNT"),
+                                    "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>",
+                                    rs.getString("CUSTOMER")
                };
                model.addRow(rowData);
             }
             
-            this.WarehouseTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 16));
-            
-//            DefaultTableCellRenderer testR = new DefaultTableCellRenderer();
-//            testR.setText("bang");
+            this.InvoicesTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 16));
 
             DefaultTableCellRenderer usercolRenderer = new DefaultTableCellRenderer();
             usercolRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
             
-//            this.CustomersTable.getColumnModel().getColumn(0).setMaxWidth(200);
-//            this.CustomersTable.getColumnModel().getColumn(1).setCellRenderer(usercolRenderer);
-//            this.CustomersTable.getColumnModel().getColumn(2).setCellRenderer(usercolRenderer);
-            
-//            this.CustomersTable.getColumnModel().getColumn(2).setCellRenderer(testR);
-            
             DefaultTableCellRenderer idcolRenderer = new DefaultTableCellRenderer();
             idcolRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-            this.WarehouseTable.getColumnModel().getColumn(0).setCellRenderer(idcolRenderer);
+            this.InvoicesTable.getColumnModel().getColumn(0).setCellRenderer(idcolRenderer);
             
-            config.Functions.updateRowHeights(WarehouseTable);
-            this.WarehouseTable.repaint();
+            config.Functions.updateRowHeights(InvoicesTable);
+            this.InvoicesTable.repaint();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -117,7 +104,7 @@ public class InvoicesPanel extends javax.swing.JPanel {
         updateBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        WarehouseTable = new javax.swing.JTable();
+        InvoicesTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
         newBtn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -150,29 +137,29 @@ public class InvoicesPanel extends javax.swing.JPanel {
             }
         });
 
-        WarehouseTable.setAutoCreateRowSorter(true);
-        WarehouseTable.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
-        WarehouseTable.setModel(new javax.swing.table.DefaultTableModel(
+        InvoicesTable.setAutoCreateRowSorter(true);
+        InvoicesTable.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        InvoicesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Code", "Name", "Address", "Phone", "FAX", "Email", "Date"
+                "ID", "Total Amount", "Date", "Customer"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        WarehouseTable.setFocusable(false);
-        WarehouseTable.setIntercellSpacing(new java.awt.Dimension(10, 10));
-        WarehouseTable.setMinimumSize(new java.awt.Dimension(100, 120));
-        WarehouseTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(WarehouseTable);
+        InvoicesTable.setFocusable(false);
+        InvoicesTable.setIntercellSpacing(new java.awt.Dimension(10, 10));
+        InvoicesTable.setMinimumSize(new java.awt.Dimension(100, 120));
+        InvoicesTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(InvoicesTable);
 
         jLabel1.setFont(new java.awt.Font("Anton", 0, 36)); // NOI18N
         jLabel1.setText("INVOICES PAGE MANAGEMENT");
@@ -210,87 +197,87 @@ public class InvoicesPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newBtnActionPerformed
-        WarehouseEditorPanel panel = new WarehouseEditorPanel();
+        InvoiceEditorPanel panel = new InvoiceEditorPanel();
         
         Object[] options = {"Submit", "Cancel"};
         int returnVal = JOptionPane.showOptionDialog(null, panel, "Enter new warehouse information: ",
             JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
             null, options, null);
-        if( returnVal == 0 ){
-            Warehouse newWarehouse = new Warehouse();
-            try {
-                newWarehouse.setCode(panel.get_code() );
-                newWarehouse.setName( panel.get_name()    );
-                newWarehouse.setAddress( panel.get_address() );
-                
-                newWarehouse.setPhone(panel.get_phone());
-                newWarehouse.setFax(panel.get_fax());
-                newWarehouse.setEmail(panel.get_email());               
-                
-                String sql = "INSERT INTO "+table+" "
-                        + "(CODE, NAME, ADDRESS, PHONE, EMAIL, FAX, DATEADDED) "
-                        + "VALUES ('"+newWarehouse.getCode()+"','"+newWarehouse.getName()+"', '" + newWarehouse.getAddress() +"', '"
-                        + newWarehouse.getPhone()+"', '"+ newWarehouse.getEmail() +"', '"+ newWarehouse.getFax() +"', "
-                        +" CURRENT_TIMESTAMP)";
-                System.out.println(sql  );
-                statement.execute(sql);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-            update_table();
+//        if( returnVal == 0 ){
+//            Warehouse newWarehouse = new Warehouse();
+//            try {
+//                newWarehouse.setCode(panel.get_code() );
+//                newWarehouse.setName( panel.get_name()    );
+//                newWarehouse.setAddress( panel.get_address() );
+//                
+//                newWarehouse.setPhone(panel.get_phone());
+//                newWarehouse.setFax(panel.get_fax());
+//                newWarehouse.setEmail(panel.get_email());               
+//                
+//                String sql = "INSERT INTO "+table+" "
+//                        + "(CODE, NAME, ADDRESS, PHONE, EMAIL, FAX, DATEADDED) "
+//                        + "VALUES ('"+newWarehouse.getCode()+"','"+newWarehouse.getName()+"', '" + newWarehouse.getAddress() +"', '"
+//                        + newWarehouse.getPhone()+"', '"+ newWarehouse.getEmail() +"', '"+ newWarehouse.getFax() +"', "
+//                        +" CURRENT_TIMESTAMP)";
+//                System.out.println(sql  );
+//                statement.execute(sql);
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        }
+//
+//            update_table();
     }//GEN-LAST:event_newBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
-        int srow = this.WarehouseTable.getSelectedRow();
-        System.out.println(srow); //display selected row
-
-        WarehouseEditorPanel panel = null;
-        try {
-            panel = new WarehouseEditorPanel();
-            panel.set_code((String) this.WarehouseTable.getValueAt(srow, 0));
-            panel.disable_code();
-            panel.set_name((String) this.WarehouseTable.getValueAt(srow, 1));
-            panel.set_address((String) this.WarehouseTable.getValueAt(srow, 2));
-            panel.set_phone((String) this.WarehouseTable.getValueAt(srow, 3));
-            panel.set_fax((String) this.WarehouseTable.getValueAt(srow, 4));
-            panel.set_email((String) this.WarehouseTable.getValueAt(srow, 5));
-        
-        
-        
-    
-            Object[] options = {"Submit", "Cancel"};
-            int returnVal = JOptionPane.showOptionDialog(null, panel, "Update warehouse information: ",
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
-                null, options, null);
-
-            if( returnVal == 0 ){
-
-                try {
-                    String sql = "UPDATE "+table 
-                            + " SET NAME='"+ panel.get_name() +"', ADDRESS='"+ panel.get_address()+"', "
-                            + " PHONE='"+ panel.get_phone() +"', EMAIL='"+ panel.get_email() +"', FAX='"+ panel.get_fax() +"'"
-                            + " WHERE CODE='"+ panel.get_code() +"'";
-                    System.out.println("THE QUERY: "+sql);
-                    statement.execute(sql);
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-
-                update_table();
-            }
-        
-        } catch (java.lang.IndexOutOfBoundsException boundEx) {
-            JOptionPane.showMessageDialog(null, "No Selected Record to be updated");
-        }
+//        int srow = this.WarehouseTable.getSelectedRow();
+//        System.out.println(srow); //display selected row
+//
+//        WarehouseEditorPanel panel = null;
+//        try {
+//            panel = new WarehouseEditorPanel();
+//            panel.set_code((String) this.WarehouseTable.getValueAt(srow, 0));
+//            panel.disable_code();
+//            panel.set_name((String) this.WarehouseTable.getValueAt(srow, 1));
+//            panel.set_address((String) this.WarehouseTable.getValueAt(srow, 2));
+//            panel.set_phone((String) this.WarehouseTable.getValueAt(srow, 3));
+//            panel.set_fax((String) this.WarehouseTable.getValueAt(srow, 4));
+//            panel.set_email((String) this.WarehouseTable.getValueAt(srow, 5));
+//        
+//        
+//        
+//    
+//            Object[] options = {"Submit", "Cancel"};
+//            int returnVal = JOptionPane.showOptionDialog(null, panel, "Update warehouse information: ",
+//                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+//                null, options, null);
+//
+//            if( returnVal == 0 ){
+//
+//                try {
+//                    String sql = "UPDATE "+table 
+//                            + " SET NAME='"+ panel.get_name() +"', ADDRESS='"+ panel.get_address()+"', "
+//                            + " PHONE='"+ panel.get_phone() +"', EMAIL='"+ panel.get_email() +"', FAX='"+ panel.get_fax() +"'"
+//                            + " WHERE CODE='"+ panel.get_code() +"'";
+//                    System.out.println("THE QUERY: "+sql);
+//                    statement.execute(sql);
+//                } catch (SQLException ex) {
+//                    ex.printStackTrace();
+//                }
+//
+//                update_table();
+//            }
+//        
+//        } catch (java.lang.IndexOutOfBoundsException boundEx) {
+//            JOptionPane.showMessageDialog(null, "No Selected Record to be updated");
+//        }
     }//GEN-LAST:event_updateBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         try {
-            int srow = this.WarehouseTable.getSelectedRow();
-            String code = String.valueOf( this.WarehouseTable.getValueAt(srow, 0) );
-            String sql = "DELETE FROM "+table+" WHERE CODE='"+code+"'";
+            int srow = this.InvoicesTable.getSelectedRow();
+            String code = String.valueOf( this.InvoicesTable.getValueAt(srow, 0) );
+            String sql = "DELETE FROM "+tblInvoices+" WHERE CODE='"+code+"'";
             System.out.println(code);
             statement.execute(sql);
         } catch (SQLException ex) {
@@ -302,7 +289,7 @@ public class InvoicesPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable WarehouseTable;
+    private javax.swing.JTable InvoicesTable;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
