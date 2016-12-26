@@ -49,6 +49,9 @@ public class Mainframe extends javax.swing.JFrame {
         btnTest = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         homeM = new javax.swing.JMenu();
+        transactionsM = new javax.swing.JMenu();
+        invoiceMI = new javax.swing.JMenuItem();
+        warehouseMI2 = new javax.swing.JMenuItem();
         warehouseM = new javax.swing.JMenu();
         warehouseMI = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -133,6 +136,41 @@ public class Mainframe extends javax.swing.JFrame {
             }
         });
         jMenuBar1.add(homeM);
+
+        transactionsM.setMnemonic('t');
+        transactionsM.setText("Transactions");
+        transactionsM.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        transactionsM.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                transactionsMMenuSelected(evt);
+            }
+        });
+
+        invoiceMI.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        invoiceMI.setMnemonic('i');
+        invoiceMI.setText("Invoices");
+        invoiceMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                invoiceMIActionPerformed(evt);
+            }
+        });
+        transactionsM.add(invoiceMI);
+
+        warehouseMI2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        warehouseMI2.setMnemonic('i');
+        warehouseMI2.setText("Orders");
+        warehouseMI2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                warehouseMI2ActionPerformed(evt);
+            }
+        });
+        transactionsM.add(warehouseMI2);
+
+        jMenuBar1.add(transactionsM);
 
         warehouseM.setMnemonic('w');
         warehouseM.setText("Warehouse Management");
@@ -372,6 +410,18 @@ public class Mainframe extends javax.swing.JFrame {
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
         JOptionPane.showMessageDialog(null, "Just Clicked");
     }//GEN-LAST:event_btnTestActionPerformed
+
+    private void transactionsMMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_transactionsMMenuSelected
+        // TODO add your handling code here:
+    }//GEN-LAST:event_transactionsMMenuSelected
+
+    private void invoiceMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_invoiceMIActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_invoiceMIActionPerformed
+
+    private void warehouseMI2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warehouseMI2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_warehouseMI2ActionPerformed
     
     public void logoutMenuItem_setText(String status){
         this.logoutMI.setText(status);
@@ -418,6 +468,7 @@ public class Mainframe extends javax.swing.JFrame {
     private javax.swing.JMenuItem categoryMI;
     private javax.swing.JMenuItem customersMI;
     private javax.swing.JMenu homeM;
+    private javax.swing.JMenuItem invoiceMI;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -427,8 +478,10 @@ public class Mainframe extends javax.swing.JFrame {
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuItem stocksMI;
     private javax.swing.JMenuItem suppliersMI;
+    private javax.swing.JMenu transactionsM;
     private javax.swing.JMenuItem usersMI;
     private javax.swing.JMenu warehouseM;
     private javax.swing.JMenuItem warehouseMI;
+    private javax.swing.JMenuItem warehouseMI2;
     // End of variables declaration//GEN-END:variables
 }
