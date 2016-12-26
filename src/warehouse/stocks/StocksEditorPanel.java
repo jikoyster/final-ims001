@@ -33,6 +33,10 @@ public class StocksEditorPanel extends javax.swing.JPanel {
     private Warehouse warehouse = null;
     private String code = "";
     
+    public double netPrice = 0;
+    public double wholesalePrice = 0;
+    public double retailPrice = 0;
+    
     /**
      * Creates new form StocksEditorPanel
      */
@@ -98,15 +102,9 @@ public class StocksEditorPanel extends javax.swing.JPanel {
     }
     public void set_less(int less){
         this.lessTF.setText(String.valueOf(less));
-    }
-    public void set_netPrice(double netPrice){
-//        this.netPriceTF.setText(String.format("%,.2f", netPrice));
-        String STR_netPrice = String.format("%,.2f", this.compute_netPrice());
-        this.netPriceTF.setText( STR_netPrice );
-        
-        //set WPrice and RPrice to net price by default
-        this.wholesalePriceTF.setText( STR_netPrice );
-        this.retailPriceTF.setText( STR_netPrice );
+    }    
+    public void set_netPrice(double nPrice){
+        this.netPriceTF.setText( String.format("%,.2f", nPrice) );
     }
     
     public void set_wholesaleMarkupPercentage(int wMarkup){
@@ -173,8 +171,22 @@ public class StocksEditorPanel extends javax.swing.JPanel {
     public double compute_netPrice(){
         double cost = Double.parseDouble(this.costTF.getText().replace(",", ""));
         double less = Double.parseDouble(this.lessTF.getText());
-        double netPrice = cost - (cost*(less/100));
+        netPrice = cost - (cost*(less/100));
         return netPrice;
+    }
+    
+    public double compute_wholesalePrice(){
+        wholesalePrice = netPrice;
+        Double wholesaleMarkupPercentage = Double.parseDouble(this.wholesaleMarkupPercentageTF.getText() );
+        wholesalePrice = netPrice + (netPrice * (wholesaleMarkupPercentage/100));
+        return wholesalePrice;
+    }
+    
+    public double compute_retailPrice(){
+        retailPrice = netPrice;
+        Double retailMarkupPercentage = Double.parseDouble( this.retailMarkupPercentageTF.getText() );
+        retailPrice = netPrice + (netPrice * (retailMarkupPercentage/100));
+        return retailPrice;
     }
     
     
@@ -338,7 +350,7 @@ public class StocksEditorPanel extends javax.swing.JPanel {
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setText("Less");
+        jLabel8.setText("Less (%)");
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -350,9 +362,15 @@ public class StocksEditorPanel extends javax.swing.JPanel {
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel9.setText("Markup Percentage");
+        jLabel9.setText("Markup Percentage (%)");
 
         wholesaleMarkupPercentageTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        wholesaleMarkupPercentageTF.setText("0");
+        wholesaleMarkupPercentageTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                wholesaleMarkupPercentageTFKeyReleased(evt);
+            }
+        });
 
         wholesalePriceTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -392,9 +410,15 @@ public class StocksEditorPanel extends javax.swing.JPanel {
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel11.setText("Markup Percentage");
+        jLabel11.setText("Markup Percentage (%)");
 
         retailMarkupPercentageTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        retailMarkupPercentageTF.setText("0");
+        retailMarkupPercentageTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                retailMarkupPercentageTFKeyReleased(evt);
+            }
+        });
 
         retailPriceTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -436,12 +460,11 @@ public class StocksEditorPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(genInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(genInfoPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(costTF, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lessTF, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -496,9 +519,24 @@ public class StocksEditorPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_lessTFKeyPressed
 
     private void lessTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lessTFKeyReleased
-//        this.netPriceTF.setText( String.format("%,.2f", this.compute_netPrice()) );
-        this.set_netPrice( this.compute_netPrice() );
+        this.compute_netPrice();
+        this.compute_wholesalePrice();
+        this.compute_retailPrice();
+        
+        this.netPriceTF.setText( String.format("%,.2f", this.netPrice) );
+        this.wholesalePriceTF.setText( String.format("%,.2f", this.wholesalePrice) );
+        this.retailPriceTF.setText( String.format("%,.2f", this.retailPrice) );
     }//GEN-LAST:event_lessTFKeyReleased
+
+    private void wholesaleMarkupPercentageTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_wholesaleMarkupPercentageTFKeyReleased
+        this.compute_wholesalePrice();
+        this.wholesalePriceTF.setText( String.format("%,.2f", this.wholesalePrice) );
+    }//GEN-LAST:event_wholesaleMarkupPercentageTFKeyReleased
+
+    private void retailMarkupPercentageTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_retailMarkupPercentageTFKeyReleased
+        this.compute_retailPrice();
+        this.retailPriceTF.setText( String.format("%,.2f", this.retailPrice) );
+    }//GEN-LAST:event_retailMarkupPercentageTFKeyReleased
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField amountTF;
