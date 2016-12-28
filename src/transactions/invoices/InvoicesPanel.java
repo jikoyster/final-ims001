@@ -59,7 +59,6 @@ public class InvoicesPanel extends javax.swing.JPanel {
             String sql = ""
                     + "SELECT ID, TOTAL_AMOUNT, DATEADDED as DATE, CUSTOMER "
                     + "FROM "+tblInvoices;
-            System.out.println(sql);
             rs = statement.executeQuery(sql);
             
 
@@ -197,10 +196,10 @@ public class InvoicesPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newBtnActionPerformed
-        InvoiceEditorPanel panel = new InvoiceEditorPanel();
+        InvoiceEditorPanel panel = new InvoiceEditorPanel(this.conn);
         
         Object[] options = {"Submit", "Cancel"};
-        int returnVal = JOptionPane.showOptionDialog(null, panel, "Enter new warehouse information: ",
+        int returnVal = JOptionPane.showOptionDialog(null, panel, "Enter new Invoice: ",
             JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
             null, options, null);
 //        if( returnVal == 0 ){

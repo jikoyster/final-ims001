@@ -7,7 +7,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 import warehouse.stocks.Stocks;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-12-27T02:07:27")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-12-29T02:31:12")
 @StaticMetamodel(Category.class)
 public class Category_ { 
 

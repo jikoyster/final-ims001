@@ -5,9 +5,24 @@
  */
 package transactions.invoices;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import warehouse.Warehouse;
+import warehouse.category.Category;
+import warehouse.stocks.Stocks;
+import warehouse.stocks.StocksEditorPanel;
+import warehouse.stocks.StocksPanel;
 
 /**
  *
@@ -15,16 +30,30 @@ import java.util.Date;
  */
 public class InvoiceEditorPanel extends javax.swing.JPanel {
 
+    private Connection conn;
+    private String tblStocks = "STOCKS";
+    DefaultTableModel model = new DefaultTableModel();
+    
     /**
      * Creates new form InvoiceEditorPanel
      */
-    public InvoiceEditorPanel() {
+    public InvoiceEditorPanel(Connection connection) {
+        initComponents();
+        
+        
         DateFormat  savingDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"),
                     displayDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
         Date date = new Date();
+//        System.out.println( "INVOICE DATE: "+displayDateFormat.format(date) );
         this.dateTF.setText( displayDateFormat.format(date) );
         
-        initComponents();
+        model.addColumn("CODE");
+        model.addColumn("NAME");
+        model.addColumn("QTY");
+        model.addColumn("PRICE");
+        model.addColumn("SUBTOTAL");
+        
+        this.update_table();
     }
 
     /**
@@ -42,9 +71,10 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        invoiceTable = new javax.swing.JTable();
         dateTF = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
+        btn_addItem = new javax.swing.JButton();
 
         invoiceTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -53,28 +83,44 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
         jLabel3.setText("Invoice #");
 
         customerTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        customerTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                customerTFKeyReleased(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel4.setText("Customer");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel5.setText("ITEMS");
         jLabel5.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        invoiceTable.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        invoiceTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Code", "Product Name", "Qty", "Price", "Subtotal"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        invoiceTable.setColumnSelectionAllowed(true);
+        invoiceTable.setIntercellSpacing(new java.awt.Dimension(5, 5));
+        invoiceTable.setRowHeight(25);
+        invoiceTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(invoiceTable);
+        invoiceTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         dateTF.setEditable(false);
         dateTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -83,6 +129,14 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel6.setText("Date");
 
+        btn_addItem.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btn_addItem.setText("Add item to list");
+        btn_addItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_addItemActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -90,29 +144,27 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(invoiceTF, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(customerTF)))
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(dateTF, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE))
+                                .addComponent(invoiceTF, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(customerTF)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dateTF, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -130,23 +182,74 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
                     .addComponent(jLabel4)
                     .addComponent(customerTF, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(btn_addItem))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(143, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    void update_table(){
+        this.invoiceTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 16));
+        
+        DefaultTableCellRenderer rightCol = new DefaultTableCellRenderer(); 
+            rightCol.setHorizontalAlignment(SwingConstants.RIGHT);
+        DefaultTableCellRenderer centerCol = new DefaultTableCellRenderer();
+            centerCol.setHorizontalAlignment(SwingConstants.CENTER);
+        this.invoiceTable.getColumnModel().getColumn(2).setCellRenderer(centerCol);
+        this.invoiceTable.getColumnModel().getColumn(3).setCellRenderer(rightCol);
+        this.invoiceTable.getColumnModel().getColumn(4).setCellRenderer(rightCol);
+        
+        
+        this.invoiceTable.getColumnModel().getColumn(2).setPreferredWidth(5);
+        
+        this.invoiceTable.setModel(model);
+    }
+    
+    private void customerTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_customerTFKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_customerTFKeyReleased
+
+    private void btn_addItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addItemActionPerformed
+        AddItemEditorPanel panel = new AddItemEditorPanel(this.conn);
+        
+        Object[] options = {"Submit", "Cancel"};
+        int returnVal = JOptionPane.showOptionDialog(null, panel, "Enter stock information: ",
+            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+            null, options, null);
+        if( returnVal == 0 ){
+                        
+            String code     = panel.getCode();
+            String name     = panel.getStockName();
+            int qty         = panel.getQty();
+            double price    = panel.getPrice();
+            double subtotal = panel.getSubtotal();
+            
+            Object[] rowData = {code, "<HTML><B>"+name+"</B></HTML>", qty, String.format("%,.2f",price), String.format("%,.2f", subtotal)};
+            model.addRow( rowData );
+            
+            this.invoiceTable.setModel(model);
+           
+        }//if condition
+        
+        
+
+            update_table();
+    }//GEN-LAST:event_btn_addItemActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_addItem;
     private javax.swing.JTextField customerTF;
     private javax.swing.JTextField dateTF;
     private javax.swing.JTextField invoiceTF;
+    private javax.swing.JTable invoiceTable;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
