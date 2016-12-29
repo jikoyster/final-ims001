@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ButtonModel;
 import javax.swing.DefaultListModel;
 /**
  *
@@ -20,7 +21,7 @@ import javax.swing.DefaultListModel;
  */
 public class AddItemEditorPanel extends javax.swing.JPanel {
     
-    private String tbl_stocks = "Stocks";
+    private String tbl_stocks = "STOCKS";
     private Connection conn = null;
     private Statement statement = null;
     
@@ -58,15 +59,18 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnGrp_type = new javax.swing.ButtonGroup();
         queryTF = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         searchResultList = new javax.swing.JList<>();
         btn_addSelectedStock = new javax.swing.JButton();
         xStockTF = new javax.swing.JTextField();
         xQuantityTF = new javax.swing.JTextField();
-        xWholesalePriceTF = new javax.swing.JTextField();
+        xPriceTF = new javax.swing.JTextField();
         xSubtotalTF = new javax.swing.JTextField();
         xStockCodeTF = new javax.swing.JTextField();
+        wholesaleTypeRB = new javax.swing.JRadioButton();
+        retailTypeRB = new javax.swing.JRadioButton();
 
         queryTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         queryTF.setText("Enter Stock Code / Name");
@@ -121,9 +125,9 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
             }
         });
 
-        xWholesalePriceTF.setEditable(false);
-        xWholesalePriceTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        xWholesalePriceTF.setText("Price");
+        xPriceTF.setEditable(false);
+        xPriceTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        xPriceTF.setText("Price");
 
         xSubtotalTF.setEditable(false);
         xSubtotalTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -132,6 +136,27 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
         xStockCodeTF.setEditable(false);
         xStockCodeTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         xStockCodeTF.setText("Stock Code");
+
+        btnGrp_type.add(wholesaleTypeRB);
+        wholesaleTypeRB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        wholesaleTypeRB.setSelected(true);
+        wholesaleTypeRB.setText("Wholesale");
+        wholesaleTypeRB.setToolTipText("");
+        wholesaleTypeRB.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                wholesaleTypeRBFocusGained(evt);
+            }
+        });
+
+        btnGrp_type.add(retailTypeRB);
+        retailTypeRB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        retailTypeRB.setText("Retail");
+        retailTypeRB.setToolTipText("");
+        retailTypeRB.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                retailTypeRBFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -149,9 +174,13 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(xStockTF, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(xQuantityTF, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(xWholesalePriceTF, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(xPriceTF, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(xSubtotalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(xStockCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(xStockCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(wholesaleTypeRB)
+                        .addGap(18, 18, 18)
+                        .addComponent(retailTypeRB)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -160,21 +189,25 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(xStockCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(xStockTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(xQuantityTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(xWholesalePriceTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(xSubtotalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(queryTF, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_addSelectedStock))))
+                            .addComponent(btn_addSelectedStock)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(xStockCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(xStockTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(wholesaleTypeRB)
+                            .addComponent(retailTypeRB))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(xQuantityTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(xPriceTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(xSubtotalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -214,6 +247,18 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_queryTFMouseClicked
 
+    public String getInvoiceType(){
+        String type = "";
+        ButtonModel typeModel = this.btnGrp_type.getSelection();
+        if( typeModel.equals(this.wholesaleTypeRB) ){
+            type = "wholesale";
+        }else{
+            type = "retail";
+        }
+        
+        return type;
+    }
+    
     private void btn_addSelectedStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addSelectedStockActionPerformed
         this.clearSelected();
         
@@ -221,12 +266,12 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
             ResultSet rs = null;
             String selectedStock = this.searchResultList.getSelectedValue();
             this.xStockTF.setText(selectedStock);
-            String query = "SELECT CODE, WHOLESALE_PRICE, RETAIL_PRICE FROM "+ this.tbl_stocks +" WHERE NAME='"+selectedStock+"'";
+            String query = "SELECT CODE, WHOLESALE_PRICE FROM "+ this.tbl_stocks +" WHERE NAME='"+selectedStock+"'";
             rs = this.statement.executeQuery(query);
             rs.next();
             
             this.xStockCodeTF.setText(rs.getString("CODE"));
-            this.xWholesalePriceTF.setText( String.format("%,.2f", rs.getDouble("WHOLESALE_PRICE")) );
+            this.xPriceTF.setText( String.format("%,.2f", rs.getDouble("WHOLESALE_PRICE")) );
         } catch (SQLException ex) {
             Logger.getLogger(AddItemEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -246,21 +291,51 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_xQuantityTFKeyTyped
 
     private void xQuantityTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_xQuantityTFKeyReleased
-        String strQty   = this.xQuantityTF.getText();
-            
-        int qty         = (strQty.length()==0)? 0: Integer.valueOf( strQty );
-        Double price    = Double.valueOf( this.xWholesalePriceTF.getText().replace(",", "") );
-        Double subtotal = price * qty;
-        
-        this.xSubtotalTF.setText( String.format("%,.2f", subtotal) );
+        this.xSubtotalTF.setText( String.format("%,.2f", compute_subtotal()) );
     }//GEN-LAST:event_xQuantityTFKeyReleased
+    
+    private void wholesaleTypeRBFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_wholesaleTypeRBFocusGained
+        try {
+            String sql = "SELECT WHOLESALE_PRICE FROM "+ this.tbl_stocks +" WHERE CODE='"+this.xStockCodeTF.getText().toString()+"'";
+            ResultSet rs = this.statement.executeQuery(sql);
+            if(rs.next()){
+                this.xPriceTF.setText( String.format("%,.2f", rs.getDouble("WHOLESALE_PRICE")) );
+            }
+            this.xSubtotalTF.setText( String.format("%,.2f", compute_subtotal()) );
+        } catch (SQLException ex) {
+            Logger.getLogger(AddItemEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_wholesaleTypeRBFocusGained
+
+    private void retailTypeRBFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_retailTypeRBFocusGained
+        try {
+            String sql = "SELECT RETAIL_PRICE FROM "+ this.tbl_stocks +" WHERE CODE='"+this.xStockCodeTF.getText().toString()+"'";
+            ResultSet rs = this.statement.executeQuery(sql);
+            if(rs.next()){
+                this.xPriceTF.setText( String.format("%,.2f", rs.getDouble("RETAIL_PRICE")) );
+            }
+            this.xSubtotalTF.setText( String.format("%,.2f", compute_subtotal()) );
+        } catch (SQLException ex) {
+            Logger.getLogger(AddItemEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_retailTypeRBFocusGained
 
     private void clearSelected(){
         this.xStockCodeTF.setText("");
         this.xQuantityTF.setText("");
         this.xStockTF.setText("");
-        this.xWholesalePriceTF.setText("");
+        this.xPriceTF.setText("");
         this.xSubtotalTF.setText("");
+    }
+    
+    public double compute_subtotal(){
+        String strQty   = this.xQuantityTF.getText();
+            
+        int qty         = (strQty.length()==0)? 0: Integer.valueOf( strQty );
+        Double price    = Double.valueOf( this.xPriceTF.getText().replace(",", "") );
+        Double subtotal = price * qty;
+        
+        return subtotal;
     }
     
     /*** fields getters ***/
@@ -277,7 +352,7 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
     }
     
     public double getPrice(){
-        return Double.valueOf(this.xWholesalePriceTF.getText().replace(",", ""));
+        return Double.valueOf(this.xPriceTF.getText().replace(",", ""));
     }
     
     public double getSubtotal(){
@@ -285,14 +360,17 @@ public class AddItemEditorPanel extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup btnGrp_type;
     private javax.swing.JButton btn_addSelectedStock;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField queryTF;
+    private javax.swing.JRadioButton retailTypeRB;
     private javax.swing.JList<String> searchResultList;
+    private javax.swing.JRadioButton wholesaleTypeRB;
+    private javax.swing.JTextField xPriceTF;
     private javax.swing.JTextField xQuantityTF;
     private javax.swing.JTextField xStockCodeTF;
     private javax.swing.JTextField xStockTF;
     private javax.swing.JTextField xSubtotalTF;
-    private javax.swing.JTextField xWholesalePriceTF;
     // End of variables declaration//GEN-END:variables
 }
