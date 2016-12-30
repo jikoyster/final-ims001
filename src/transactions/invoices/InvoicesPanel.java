@@ -295,10 +295,12 @@ public class InvoicesPanel extends javax.swing.JPanel {
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         try {
             int srow = this.InvoicesTable.getSelectedRow();
-            String code = String.valueOf( this.InvoicesTable.getValueAt(srow, 0) );
-            String sql = "DELETE FROM "+tblInvoices+" WHERE CODE='"+code+"'";
-            System.out.println(code);
-            statement.execute(sql);
+            String invoiceID = String.valueOf( this.InvoicesTable.getValueAt(srow, 0) );
+            
+            String invoiceItemsDelSql = "DELETE FROM "+this.tblInvoiceItems+" WHERE INVOICE='"+invoiceID+"'";
+            statement.execute(invoiceItemsDelSql);
+            String invoiceDelSql = "DELETE FROM "+this.tblInvoices+" WHERE ID='"+invoiceID+"'";
+            statement.execute(invoiceDelSql);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
