@@ -6,13 +6,11 @@
             <file>file:/D:/Ozamiz/projects/final/Ims001/src/main/Ims001.java</file>
             <file>file:/D:/Ozamiz/projects/final/Ims001/src/warehouse/WarehousePanel.java</file>
             <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/InvoiceItems.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/warehouse/stocks/Stocks.java</file>
             <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/InvoicesPanel.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/warehouse/WarehouseEditorPanel.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/main/Mainframe.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/main/LoginFrame.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/Invoices.java</file>
+            <file>file:/D:/Ozamiz/projects/final/Ims001/src/warehouse/stocks/StocksPanel.java</file>
+            <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/AddItemEditorPanel.java</file>
             <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/InvoiceEditorPanel.java</file>
+            <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/Invoices.java</file>
         </group>
     </open-files>
 </project-private>
