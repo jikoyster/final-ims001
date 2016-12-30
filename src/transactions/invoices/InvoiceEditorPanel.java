@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -34,6 +35,8 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
     private Connection conn = null;
     private String tblStocks = "STOCKS";
     private DefaultTableModel model = new DefaultTableModel();
+    
+    private String customerCode, customerName;
     
     /**
      * Creates new form InvoiceEditorPanel
@@ -280,7 +283,9 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
             JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
             null, options, null);
         if( returnVal == 0 ){
-            this.customerTF.setText( panel.getCustomer() );
+            this.customerCode = panel.getSelectedCustomerCode();
+            this.customerName = panel.getSelectedCustomerName();
+            this.customerTF.setText( this.customerName );
         }//if condition
     }//GEN-LAST:event_btn_setCustomerActionPerformed
 
@@ -290,6 +295,36 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
             total += Double.valueOf(String.valueOf(this.invoiceTable.getValueAt(i, 4)).replace(",", "")) ;
         }
         this.totalTF.setText( String.format("%,.2f", total) );
+    }
+    
+    
+    /***************** GETTERS ************************************/
+    public String getInvoiceNumber(){
+        return this.invoiceTF.getText().toString();
+    }
+    public String getCustomer(){
+        return this.customerTF.getText().toString();
+    }
+    public String getDate(){
+        return this.dateTF.getText().toString();
+    }
+    public double getTotal(){
+        return Double.valueOf(this.totalTF.getText().replace(",", ""));
+    }
+    
+    public JTable getItems(){
+        return this.invoiceTable;
+    }
+    
+    public int getInvoiceTableRows(){
+        return this.invoiceTable.getRowCount();
+    }
+    
+    public String getCustomerCode(){
+        return this.customerCode;
+    }
+    public String getCustomerName(){
+        return this.customerName;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -26,6 +26,8 @@ public class SetCustomerEditorPanel extends javax.swing.JPanel {
     
     private String hintForQuery = "Enter Customer Code / Name ";
     
+    private String selectedCustomerCode, selectedCustomerName;
+    
     /**
      * Creates new form SetCustomerEditorPanel
      */
@@ -116,8 +118,11 @@ public class SetCustomerEditorPanel extends javax.swing.JPanel {
             rs = this.statement.executeQuery(sql);            
             while(rs.next()){
                 String code = rs.getString("CODE");
-                String name = rs.getString("NAME");                
-                model.addElement(name);
+                String name = rs.getString("NAME");  
+                
+                this.selectedCustomerCode = code;
+                this.selectedCustomerName = name;
+                model.addElement(this.selectedCustomerName);
             }
             this.customerList.setModel(model);
         } catch (SQLException ex) {
@@ -131,6 +136,14 @@ public class SetCustomerEditorPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_queryTFMouseClicked
 
+    
+    /************* GETTERS *******************/
+    public String getSelectedCustomerCode(){
+        return this.selectedCustomerCode;
+    }
+    public String getSelectedCustomerName(){
+        return this.selectedCustomerName;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> customerList;

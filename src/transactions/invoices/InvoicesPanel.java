@@ -39,6 +39,8 @@ public class InvoicesPanel extends javax.swing.JPanel {
     private Statement statement = null;
     
     private String tblInvoices = "INVOICES";
+    private String tblInvoiceItems = "INVOICE_ITEMS";
+    private String tblCustomers = "CUSTOMERS";
     /**
      * Creates new form CustomersPanel
      */
@@ -57,8 +59,10 @@ public class InvoicesPanel extends javax.swing.JPanel {
     void update_table(){
         try { 
             String sql = ""
-                    + "SELECT ID, TOTAL_AMOUNT, DATEADDED as DATE, CUSTOMER "
-                    + "FROM "+tblInvoices;
+                    + "SELECT ID, TOTAL_AMOUNT, "+this.tblCustomers+".NAME AS CUSTOMER, "+this.tblInvoices+".DATEADDED as DATE "
+                    + "FROM "+this.tblInvoices+" INNER JOIN "+this.tblCustomers+" "
+                    + "ON "+this.tblCustomers+".CODE="+this.tblInvoices+".CUSTOMER";
+            System.out.println(sql);
             rs = statement.executeQuery(sql);
             
 
@@ -68,8 +72,8 @@ public class InvoicesPanel extends javax.swing.JPanel {
                Object[] rowData = {
                                     rs.getString("ID"), 
                                     rs.getString("TOTAL_AMOUNT"),
-                                    "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>",
-                                    rs.getString("CUSTOMER")
+                                    rs.getString("CUSTOMER"),
+                                    "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
                };
                model.addRow(rowData);
             }
@@ -143,7 +147,7 @@ public class InvoicesPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Total Amount", "Date", "Customer"
+                "ID", "Total Amount", "Customer", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -202,30 +206,46 @@ public class InvoicesPanel extends javax.swing.JPanel {
         int returnVal = JOptionPane.showOptionDialog(null, panel, "Enter new Invoice: ",
             JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
             null, options, null);
-//        if( returnVal == 0 ){
-//            Warehouse newWarehouse = new Warehouse();
-//            try {
-//                newWarehouse.setCode(panel.get_code() );
-//                newWarehouse.setName( panel.get_name()    );
-//                newWarehouse.setAddress( panel.get_address() );
-//                
-//                newWarehouse.setPhone(panel.get_phone());
-//                newWarehouse.setFax(panel.get_fax());
-//                newWarehouse.setEmail(panel.get_email());               
-//                
-//                String sql = "INSERT INTO "+table+" "
-//                        + "(CODE, NAME, ADDRESS, PHONE, EMAIL, FAX, DATEADDED) "
-//                        + "VALUES ('"+newWarehouse.getCode()+"','"+newWarehouse.getName()+"', '" + newWarehouse.getAddress() +"', '"
-//                        + newWarehouse.getPhone()+"', '"+ newWarehouse.getEmail() +"', '"+ newWarehouse.getFax() +"', "
-//                        +" CURRENT_TIMESTAMP)";
-//                System.out.println(sql  );
-//                statement.execute(sql);
-//            } catch (Exception ex) {
-//                ex.printStackTrace();
-//            }
-//        }
-//
-//            update_table();
+        if( returnVal == 0 ){
+            //create the invoice 1st
+            String invoiceID        = panel.getInvoiceNumber();
+            String customer         = panel.getCustomerCode();
+            Double total            = panel.getTotal();
+            
+            String sqlInvoice = "INSERT INTO "+this.tblInvoices+" "
+                    + "(ID, TOTAL_AMOUNT, CUSTOMER, DATEADDED) "
+                    + "VALUES ('"+invoiceID+"', "+total+", '"+customer+"', CURRENT_TIMESTAMP)";
+            System.out.println(sqlInvoice);
+            try {
+                this.statement.execute(sqlInvoice);
+            } catch (SQLException ex) {
+                Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            //create the items of this invoice
+            int rows                = panel.getInvoiceTableRows();
+            System.out.println("INV-ROWS: "+rows);
+            for(int i=0; i<rows; i++){
+                String itemCode     = (String) panel.getItems().getValueAt(i, 0);
+                String itemName     = (String) panel.getItems().getValueAt(i, 1);
+                int    itemQty      = (int) panel.getItems().getValueAt(i, 2);
+                double itemPrice    = Double.valueOf( ((String)panel.getItems().getValueAt(i, 3)).replace(",", "") );
+                double itemSubtotal = Double.valueOf( ((String)panel.getItems().getValueAt(i, 4)).replace(",", "") );
+                
+                String sqlItem = "INSERT INTO "+ this.tblInvoiceItems +" "
+                        +"(INVOICE, CODE, QUANTITY, PRICE, SUBTOTAL) "
+                        + "VALUES ('"+invoiceID+"', '"+itemCode+"', "+itemQty+", "+itemPrice+", "+itemSubtotal+" )";
+                System.out.println(sqlItem);
+                try {
+                    this.statement.execute(sqlItem);
+                } catch (SQLException ex) {
+                    Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }//INVOICE ITEMS LOOP //FOR
+
+        }//IF 
+
+            update_table();
     }//GEN-LAST:event_newBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
