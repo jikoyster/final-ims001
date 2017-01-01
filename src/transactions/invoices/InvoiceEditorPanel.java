@@ -9,7 +9,9 @@ import config.Functions;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +35,11 @@ import warehouse.stocks.StocksPanel;
 public class InvoiceEditorPanel extends javax.swing.JPanel {
 
     private Connection conn = null;
+    private Statement statement = null;
+    
     private String tblStocks = "STOCKS";
+    private String tblInvoice = "INVOICES";
+    private String tblInvoiceItems = "INVOICE_ITEMS";
     private DefaultTableModel model = new DefaultTableModel();
     
     private String customerCode, customerName;
@@ -43,6 +49,13 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
      */
     public InvoiceEditorPanel(Connection connection) {
         initComponents();
+        
+        try {
+            this.conn = new config.Database().get_connection();
+            this.statement = this.conn.createStatement();
+        } catch (SQLException ex) {
+            Logger.getLogger(InvoiceEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         
         DateFormat  savingDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"),
@@ -81,6 +94,7 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         totalTF = new javax.swing.JTextField();
         btn_setCustomer = new javax.swing.JButton();
+        btn_remove = new javax.swing.JButton();
 
         invoiceTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -160,6 +174,14 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
             }
         });
 
+        btn_remove.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btn_remove.setText("Remove Selected Item(s)");
+        btn_remove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_removeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -168,30 +190,33 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(58, 58, 58)
-                                .addComponent(btn_setCustomer)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(invoiceTF, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
-                            .addComponent(customerTF))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dateTF, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(totalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(totalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(58, 58, 58)
+                                        .addComponent(btn_setCustomer)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(invoiceTF)
+                                    .addComponent(customerTF)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btn_remove, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dateTF, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -212,7 +237,8 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
                 .addGap(9, 9, 9)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_remove, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -289,6 +315,17 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
         }//if condition
     }//GEN-LAST:event_btn_setCustomerActionPerformed
 
+    private void btn_removeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_removeActionPerformed
+        int[] srows = this.invoiceTable.getSelectedRows();
+        DefaultTableModel model = (DefaultTableModel) this.invoiceTable.getModel();
+        
+        for( int i=0; i<srows.length; i++){
+            model.removeRow( srows[i] );
+        }
+        
+        this.invoiceTable.setModel(model);
+    }//GEN-LAST:event_btn_removeActionPerformed
+
     public void setTotal(){
         double total = 0;
         for(int i=0; i<this.invoiceTable.getRowCount(); i++){
@@ -297,6 +334,45 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
         this.totalTF.setText( String.format("%,.2f", total) );
     }
     
+    
+    /***************** SETTERS ************************************/
+    public void setInvoiceNumber(String invoiceNumber){
+        this.invoiceTF.setText(invoiceNumber);
+    }
+    public void setCustomer(String customer){
+        this.customerTF.setText(customer);
+    }
+    public void setDate(String invoiceDate){
+        this.dateTF.setText(invoiceDate);
+    }
+    public void setTotal(Double total){
+        this.totalTF.setText(String.format("%,.2f", total));
+    }
+    
+    public void setItems(String invoiceID){
+        String sql = "SELECT * FROM "+this.tblInvoiceItems+", "+this.tblStocks+" "
+                + "WHERE INVOICE='"+invoiceID+"' AND "+this.tblInvoiceItems+".CODE="+this.tblStocks+".CODE";
+        try {
+            DefaultTableModel model = (DefaultTableModel) this.invoiceTable.getModel();
+            ResultSet rs = this.statement.executeQuery(sql);
+            while( rs.next() ){
+                String  code        = rs.getString("CODE");
+                String  name        = rs.getString("NAME");
+                int     qty         = rs.getInt("QUANTITY");
+                double  price       = rs.getDouble("PRICE");
+                double  subtotal    = rs.getDouble("SUBTOTAL");
+                
+                Object[] rowData = {code, "<HTML><B>"+name+"</B></HTML>",  // "<HTML><B>"+nameRS.getString("NAME")+"</B></HTML>", 
+                    qty, String.format("%,.2f", price), String.format("%,.2f", subtotal)};
+                
+                model.addRow(rowData);
+            }//while
+            config.Functions.updateRowHeights(invoiceTable);
+//            this.invoiceTable.setModel(model);
+        } catch (SQLException ex) {
+            Logger.getLogger(InvoiceEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     /***************** GETTERS ************************************/
     public String getInvoiceNumber(){
@@ -329,6 +405,7 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_addItem;
+    private javax.swing.JButton btn_remove;
     private javax.swing.JButton btn_setCustomer;
     private javax.swing.JTextField customerTF;
     private javax.swing.JTextField dateTF;

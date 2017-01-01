@@ -71,7 +71,7 @@ public class InvoicesPanel extends javax.swing.JPanel {
             while( rs.next() ){
                Object[] rowData = {
                                     rs.getString("ID"), 
-                                    rs.getString("TOTAL_AMOUNT"),
+                                    String.format("%,.2f", rs.getDouble("TOTAL_AMOUNT")),
                                     rs.getString("CUSTOMER"),
                                     "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
                };
@@ -190,10 +190,11 @@ public class InvoicesPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(newBtn)
-                    .addComponent(updateBtn)
-                    .addComponent(deleteBtn))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(updateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(newBtn)
+                        .addComponent(deleteBtn)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
         );
@@ -249,47 +250,81 @@ public class InvoicesPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_newBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
-//        int srow = this.WarehouseTable.getSelectedRow();
-//        System.out.println(srow); //display selected row
-//
-//        WarehouseEditorPanel panel = null;
-//        try {
-//            panel = new WarehouseEditorPanel();
-//            panel.set_code((String) this.WarehouseTable.getValueAt(srow, 0));
-//            panel.disable_code();
-//            panel.set_name((String) this.WarehouseTable.getValueAt(srow, 1));
-//            panel.set_address((String) this.WarehouseTable.getValueAt(srow, 2));
-//            panel.set_phone((String) this.WarehouseTable.getValueAt(srow, 3));
-//            panel.set_fax((String) this.WarehouseTable.getValueAt(srow, 4));
-//            panel.set_email((String) this.WarehouseTable.getValueAt(srow, 5));
-//        
-//        
-//        
-//    
-//            Object[] options = {"Submit", "Cancel"};
-//            int returnVal = JOptionPane.showOptionDialog(null, panel, "Update warehouse information: ",
-//                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
-//                null, options, null);
-//
-//            if( returnVal == 0 ){
-//
-//                try {
-//                    String sql = "UPDATE "+table 
-//                            + " SET NAME='"+ panel.get_name() +"', ADDRESS='"+ panel.get_address()+"', "
-//                            + " PHONE='"+ panel.get_phone() +"', EMAIL='"+ panel.get_email() +"', FAX='"+ panel.get_fax() +"'"
-//                            + " WHERE CODE='"+ panel.get_code() +"'";
-//                    System.out.println("THE QUERY: "+sql);
-//                    statement.execute(sql);
-//                } catch (SQLException ex) {
-//                    ex.printStackTrace();
-//                }
-//
-//                update_table();
-//            }
-//        
-//        } catch (java.lang.IndexOutOfBoundsException boundEx) {
-//            JOptionPane.showMessageDialog(null, "No Selected Record to be updated");
-//        }
+        int srow = this.InvoicesTable.getSelectedRow();
+        System.out.println("SELECTED ROW: "+srow);
+        
+        InvoiceEditorPanel panel = new InvoiceEditorPanel(this.conn);
+        ResultSet rs = null;
+        /*
+        * set the fields
+        */
+        String rowID = (String) this.InvoicesTable.getValueAt(srow, 0);
+        String updateSql = "SELECT * FROM "+this.tblInvoices+" "
+                + "INNER JOIN "+this.tblCustomers+" "
+                + "ON "+this.tblCustomers+".CODE="+this.tblInvoices+".CUSTOMER "
+                + "AND "+this.tblInvoices+".ID='"+rowID+"'";
+        try {
+            rs = this.statement.executeQuery(updateSql);
+            rs.next();
+            
+            panel.setInvoiceNumber( rowID );
+            panel.setCustomer(rs.getString("NAME"));
+            panel.setDate(rs.getString("DATEADDED"));
+            panel.setTotal(rs.getDouble("TOTAL_AMOUNT"));
+            
+            panel.setItems(rowID);
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+        //*************
+        Object[] options = {"Submit", "Cancel"};
+        int returnVal = JOptionPane.showOptionDialog(null, panel, "Update Invoice: ",
+            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+            null, options, null);
+        if( returnVal == 0 ){
+            //create the invoice 1st
+            String invoiceID        = panel.getInvoiceNumber();
+            String customer         = panel.getCustomerCode();
+            Double total            = panel.getTotal();
+            
+            String sqlInvoice = "INSERT INTO "+this.tblInvoices+" "
+                    + "(ID, TOTAL_AMOUNT, CUSTOMER, DATEADDED) "
+                    + "VALUES ('"+invoiceID+"', "+total+", '"+customer+"', CURRENT_TIMESTAMP)";
+            System.out.println(sqlInvoice);
+            try {
+                this.statement.execute(sqlInvoice);
+            } catch (SQLException ex) {
+                Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            //create the items of this invoice
+            int rows                = panel.getInvoiceTableRows();
+            System.out.println("INV-ROWS: "+rows);
+            for(int i=0; i<rows; i++){
+                String itemCode     = (String) panel.getItems().getValueAt(i, 0);
+                String itemName     = (String) panel.getItems().getValueAt(i, 1);
+                int    itemQty      = (int) panel.getItems().getValueAt(i, 2);
+                double itemPrice    = Double.valueOf( ((String)panel.getItems().getValueAt(i, 3)).replace(",", "") );
+                double itemSubtotal = Double.valueOf( ((String)panel.getItems().getValueAt(i, 4)).replace(",", "") );
+                
+                String sqlItem = "INSERT INTO "+ this.tblInvoiceItems +" "
+                        +"(INVOICE, CODE, QUANTITY, PRICE, SUBTOTAL) "
+                        + "VALUES ('"+invoiceID+"', '"+itemCode+"', "+itemQty+", "+itemPrice+", "+itemSubtotal+" )";
+                System.out.println(sqlItem);
+                try {
+                    this.statement.execute(sqlItem);
+                } catch (SQLException ex) {
+                    Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }//INVOICE ITEMS LOOP //FOR
+
+        }//IF 
+
+            update_table();
     }//GEN-LAST:event_updateBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
