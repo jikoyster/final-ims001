@@ -41,6 +41,8 @@ public class InvoicesPanel extends javax.swing.JPanel {
     private String tblInvoices = "INVOICES";
     private String tblInvoiceItems = "INVOICE_ITEMS";
     private String tblCustomers = "CUSTOMERS";
+    
+    public boolean isUpdate = false;
     /**
      * Creates new form CustomersPanel
      */
@@ -62,10 +64,8 @@ public class InvoicesPanel extends javax.swing.JPanel {
                     + "SELECT ID, TOTAL_AMOUNT, "+this.tblCustomers+".NAME AS CUSTOMER, "+this.tblInvoices+".DATEADDED as DATE "
                     + "FROM "+this.tblInvoices+" INNER JOIN "+this.tblCustomers+" "
                     + "ON "+this.tblCustomers+".CODE="+this.tblInvoices+".CUSTOMER";
-            System.out.println(sql);
             rs = statement.executeQuery(sql);
             
-
             DefaultTableModel model = (DefaultTableModel) this.InvoicesTable.getModel();
             model.setRowCount(0); //clearn table
             while( rs.next() ){
@@ -250,10 +250,13 @@ public class InvoicesPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_newBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        this.isUpdate = true;
+        
         int srow = this.InvoicesTable.getSelectedRow();
         System.out.println("SELECTED ROW: "+srow);
         
         InvoiceEditorPanel panel = new InvoiceEditorPanel(this.conn);
+        panel.isUpdate = true;
         ResultSet rs = null;
         /*
         * set the fields
@@ -291,16 +294,34 @@ public class InvoicesPanel extends javax.swing.JPanel {
             String customer         = panel.getCustomerCode();
             Double total            = panel.getTotal();
             
-            String sqlInvoice = "INSERT INTO "+this.tblInvoices+" "
-                    + "(ID, TOTAL_AMOUNT, CUSTOMER, DATEADDED) "
-                    + "VALUES ('"+invoiceID+"', "+total+", '"+customer+"', CURRENT_TIMESTAMP)";
-            System.out.println(sqlInvoice);
+            
+            String sqlInvoice = "";
+            if(!this.isUpdate){
+                sqlInvoice = "INSERT INTO "+this.tblInvoices+" "
+                        + "(ID, TOTAL_AMOUNT, CUSTOMER, DATEADDED) "
+                        + "VALUES ('"+invoiceID+"', "+total+", '"+customer+"', CURRENT_TIMESTAMP)";
+            }else{
+                sqlInvoice = "UPDATE "+this.tblInvoices+" "
+                    + "SET TOTAL_AMOUNT="+total+", DATEADDED=CURRENT_TIMESTAMP "
+                    + "WHERE ID='"+invoiceID+"' ";
+            }
+                   
             try {
+                System.out.println("EXECUTE UPDATE: "+sqlInvoice);
                 this.statement.execute(sqlInvoice);
             } catch (SQLException ex) {
                 Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
             
+            if(this.isUpdate){
+                //#1
+                String deleteAllItemsFromInvoice = "DELETE FROM "+this.tblInvoiceItems+" WHERE INVOICE='"+invoiceID+"'";
+                try {
+                    this.statement.execute(deleteAllItemsFromInvoice);
+                } catch (SQLException ex) {
+                    Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             //create the items of this invoice
             int rows                = panel.getInvoiceTableRows();
             System.out.println("INV-ROWS: "+rows);
@@ -311,10 +332,13 @@ public class InvoicesPanel extends javax.swing.JPanel {
                 double itemPrice    = Double.valueOf( ((String)panel.getItems().getValueAt(i, 3)).replace(",", "") );
                 double itemSubtotal = Double.valueOf( ((String)panel.getItems().getValueAt(i, 4)).replace(",", "") );
                 
+                
+                
                 String sqlItem = "INSERT INTO "+ this.tblInvoiceItems +" "
-                        +"(INVOICE, CODE, QUANTITY, PRICE, SUBTOTAL) "
-                        + "VALUES ('"+invoiceID+"', '"+itemCode+"', "+itemQty+", "+itemPrice+", "+itemSubtotal+" )";
-                System.out.println(sqlItem);
+                            +"(INVOICE, CODE, QUANTITY, PRICE, SUBTOTAL) "
+                            + "VALUES ('"+invoiceID+"', '"+itemCode+"', "+itemQty+", "+itemPrice+", "+itemSubtotal+" )";
+                
+                
                 try {
                     this.statement.execute(sqlItem);
                 } catch (SQLException ex) {

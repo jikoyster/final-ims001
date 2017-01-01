@@ -44,6 +44,7 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
     
     private String customerCode, customerName;
     
+    public boolean isUpdate = false;
     /**
      * Creates new form InvoiceEditorPanel
      */
@@ -91,10 +92,10 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
         dateTF = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         btn_addItem = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
         totalTF = new javax.swing.JTextField();
         btn_setCustomer = new javax.swing.JButton();
         btn_remove = new javax.swing.JButton();
+        btn_totalAmt = new javax.swing.JButton();
 
         invoiceTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -159,9 +160,6 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("TOTAL AMOUNT");
-
         totalTF.setEditable(false);
         totalTF.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         totalTF.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
@@ -182,6 +180,14 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
             }
         });
 
+        btn_totalAmt.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btn_totalAmt.setText("TOTAL AMOUNT");
+        btn_totalAmt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_totalAmtActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -192,7 +198,7 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
+                        .addComponent(btn_totalAmt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(totalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -243,8 +249,8 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(totalTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(totalTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_totalAmt))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -316,15 +322,41 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_btn_setCustomerActionPerformed
 
     private void btn_removeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_removeActionPerformed
-        int[] srows = this.invoiceTable.getSelectedRows();
-        DefaultTableModel model = (DefaultTableModel) this.invoiceTable.getModel();
+        int result = JOptionPane.showConfirmDialog(null, "Remove item from this invoice?", "Warning", JOptionPane.YES_NO_OPTION);
         
-        for( int i=0; i<srows.length; i++){
-            model.removeRow( srows[i] );
-        }
-        
-        this.invoiceTable.setModel(model);
+        if(result == JOptionPane.YES_OPTION){
+            //1st get selected rows
+            int[] srows = this.invoiceTable.getSelectedRows();
+            DefaultTableModel model = (DefaultTableModel) this.invoiceTable.getModel();
+
+            for( int i=0; i<srows.length; i++){
+                if( this.isUpdate ){
+                    //remove stocks from INVOICE_ITEMS table
+                    String invoice  = this.invoiceTF.getText(),
+                            code    = (String) this.invoiceTable.getValueAt(srows[i], 0);
+
+                    String rmSql = "DELETE FROM "+this.tblInvoiceItems+" "
+                            + "WHERE INVOICE = '"+invoice+"' AND CODE='"+code+"'";
+                    try {
+                        this.statement.execute(rmSql);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(InvoiceEditorPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }//if
+
+                model.removeRow( srows[i] );
+            }//for loop
+
+            this.invoiceTable.setModel(model);
+            
+            this.setTotal();
+        }//if result is yes
     }//GEN-LAST:event_btn_removeActionPerformed
+
+    private void btn_totalAmtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_totalAmtActionPerformed
+        this.setTotal();
+    }//GEN-LAST:event_btn_totalAmtActionPerformed
 
     public void setTotal(){
         double total = 0;
@@ -407,11 +439,11 @@ public class InvoiceEditorPanel extends javax.swing.JPanel {
     private javax.swing.JButton btn_addItem;
     private javax.swing.JButton btn_remove;
     private javax.swing.JButton btn_setCustomer;
+    private javax.swing.JButton btn_totalAmt;
     private javax.swing.JTextField customerTF;
     private javax.swing.JTextField dateTF;
     private javax.swing.JTextField invoiceTF;
     private javax.swing.JTable invoiceTable;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
