@@ -68,8 +68,14 @@ public class SetCustomerEditorPanel extends javax.swing.JPanel {
             }
         });
         queryTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                queryTFKeyPressed(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 queryTFKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                queryTFKeyTyped(evt);
             }
         });
 
@@ -130,8 +136,21 @@ public class SetCustomerEditorPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_queryTFKeyReleased
 
+    private void queryTFKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_queryTFKeyTyped
+        if( this.queryTF.getText().toString().equals(this.hintForQuery) 
+                || this.queryTF.getText().length() == 0){
+            this.queryTF.setText("");
+        }
+    }//GEN-LAST:event_queryTFKeyTyped
+
+    private void queryTFKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_queryTFKeyPressed
+        if( this.queryTF.getText().equals(this.hintForQuery) ){
+            this.queryTF.setText("");
+        }
+    }//GEN-LAST:event_queryTFKeyPressed
+
     private void queryTFMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_queryTFMouseClicked
-        if( this.queryTF.getText().toString().equals(this.hintForQuery) || this.queryTF.getText().length() == 0 ){
+        if( this.queryTF.getText().equals(this.hintForQuery) ){
             this.queryTF.setText("");
         }
     }//GEN-LAST:event_queryTFMouseClicked

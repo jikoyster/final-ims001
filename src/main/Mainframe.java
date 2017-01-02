@@ -51,7 +51,7 @@ public class Mainframe extends javax.swing.JFrame {
         homeM = new javax.swing.JMenu();
         transactionsM = new javax.swing.JMenu();
         invoiceMI = new javax.swing.JMenuItem();
-        warehouseMI2 = new javax.swing.JMenuItem();
+        ordersMI = new javax.swing.JMenuItem();
         warehouseM = new javax.swing.JMenu();
         warehouseMI = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -161,15 +161,15 @@ public class Mainframe extends javax.swing.JFrame {
         });
         transactionsM.add(invoiceMI);
 
-        warehouseMI2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        warehouseMI2.setMnemonic('o');
-        warehouseMI2.setText("Orders");
-        warehouseMI2.addActionListener(new java.awt.event.ActionListener() {
+        ordersMI.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        ordersMI.setMnemonic('o');
+        ordersMI.setText("Orders");
+        ordersMI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                warehouseMI2ActionPerformed(evt);
+                ordersMIActionPerformed(evt);
             }
         });
-        transactionsM.add(warehouseMI2);
+        transactionsM.add(ordersMI);
 
         jMenuBar1.add(transactionsM);
 
@@ -434,9 +434,23 @@ public class Mainframe extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_invoiceMIActionPerformed
 
-    private void warehouseMI2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_warehouseMI2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_warehouseMI2ActionPerformed
+    private void ordersMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordersMIActionPerformed
+        try {
+            this.mainPanel.setVisible(false);
+            if( this.currentPanel != null){
+                this.currentPanel.removeAll();
+            }
+            
+            this.currentPanel = new transactions.orders.OrdersPanel(this.conn);
+            getContentPane().add(this.currentPanel);
+            
+            validate();
+            repaint();
+        } catch (Exception e) {
+            System.out.println("ORDERS PAGE");
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_ordersMIActionPerformed
     
     public void logoutMenuItem_setText(String status){
         this.logoutMI.setText(status);
@@ -491,12 +505,12 @@ public class Mainframe extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenu logoutMI;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JMenuItem ordersMI;
     private javax.swing.JMenuItem stocksMI;
     private javax.swing.JMenuItem suppliersMI;
     private javax.swing.JMenu transactionsM;
     private javax.swing.JMenuItem usersMI;
     private javax.swing.JMenu warehouseM;
     private javax.swing.JMenuItem warehouseMI;
-    private javax.swing.JMenuItem warehouseMI2;
     // End of variables declaration//GEN-END:variables
 }
