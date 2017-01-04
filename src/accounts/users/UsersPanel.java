@@ -74,19 +74,8 @@ public class UsersPanel extends javax.swing.JPanel {
             }
             
             this.UsersTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 16));
-
-//            DefaultTableCellRenderer rightcolRenderer = new DefaultTableCellRenderer();
             this.rightcolRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-//            DefaultTableCellRenderer centercolRenderer = new DefaultTableCellRenderer();
-//            centercolRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-//            
-//            
-//            this.UsersTable.getColumnModel().getColumn(0).setCellRenderer(rightcolRenderer);
-//            this.UsersTable.getColumnModel().getColumn(2).setCellRenderer(centercolRenderer);
-//            
-//            DefaultTableCellRenderer idcolRenderer = new DefaultTableCellRenderer();
-//            idcolRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-//            this.UsersTable.getColumnModel().getColumn(0).setCellRenderer(idcolRenderer);
+            
             config.Functions.updateRowHeights(UsersTable);
             this.UsersTable.repaint();
         } catch (SQLException ex) {
@@ -224,11 +213,6 @@ public class UsersPanel extends javax.swing.JPanel {
             Users newuser = new Users();
             
             try {
-//                String username = panel.get_username();
-//                String password = panel.get_passwordMD5();
-//                short type = panel.get_type(); 
-                
-//                System.out.println(username + ":" + password +" : "+ panel.get_type());
                 newuser.setUsername(panel.get_username());
                 newuser.setPassword(panel.get_passwordMD5());
                 newuser.setTypeid(panel.get_type()); //gets Object UserType

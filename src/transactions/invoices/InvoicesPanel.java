@@ -5,25 +5,14 @@
  */
 package transactions.invoices;
 
-import accounts.customers.*;
 import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -41,6 +30,7 @@ public class InvoicesPanel extends javax.swing.JPanel {
     private String tblInvoices = "INVOICES";
     private String tblInvoiceItems = "INVOICE_ITEMS";
     private String tblCustomers = "CUSTOMERS";
+    private String tblStocks = "STOCKS";
     
     public boolean isUpdate = false;
     /**
@@ -225,7 +215,6 @@ public class InvoicesPanel extends javax.swing.JPanel {
             
             //create the items of this invoice
             int rows                = panel.getInvoiceTableRows();
-            System.out.println("INV-ROWS: "+rows);
             for(int i=0; i<rows; i++){
                 String itemCode     = (String) panel.getItems().getValueAt(i, 0);
                 String itemName     = (String) panel.getItems().getValueAt(i, 1);
@@ -236,9 +225,12 @@ public class InvoicesPanel extends javax.swing.JPanel {
                 String sqlItem = "INSERT INTO "+ this.tblInvoiceItems +" "
                         +"(INVOICE, CODE, QUANTITY, PRICE, SUBTOTAL) "
                         + "VALUES ('"+invoiceID+"', '"+itemCode+"', "+itemQty+", "+itemPrice+", "+itemSubtotal+" )";
-                System.out.println(sqlItem);
+                String updateStockSql = "UPDATE "+ this.tblStocks +" "
+                        + "SET BALANCE=BALANCE-"+ itemQty +" "
+                        + "WHERE CODE='"+itemCode+"'";
                 try {
                     this.statement.execute(sqlItem);
+                    this.statement.execute(updateStockSql);
                 } catch (SQLException ex) {
                     Logger.getLogger(InvoicesPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }

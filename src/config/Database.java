@@ -96,9 +96,10 @@ public class Database {
                     this.username, this.password);
             System.out.println("Database Connected!");
         } catch (SQLException sQLException) {
-            this.conn = DriverManager.getConnection(
-                    "jdbc:derby:" + this.dbname,
-                    this.username, this.password);
+//            sQLException.printStackTrace();
+//            this.conn = DriverManager.getConnection(
+//                    "jdbc:derby:" + this.dbname,
+//                    this.username, this.password);
         }
     }
 }//endClass

@@ -57,11 +57,12 @@ public class StocksPanel extends javax.swing.JPanel {
     
     void update_table(){
         try { 
+//            String sql = "SELECT * FROM "+this.tblStocks;
             String sql = "SELECT "+tblStocks+".CODE as CODE, "+tblStocks+".NAME, "+tblCategory+".NAME as CATEGORY, "+tblWarehouse+".NAME as WAREHOUSE, UNIT, AMOUNT_PER_UNIT, CRITICAL_LEVEL, BALANCE, WHOLESALE_PRICE, RETAIL_PRICE, "+tblStocks+".DATEADDED as Date "
                     + "FROM "+tblStocks +", "+tblCategory+", "+ tblWarehouse +" "
                     + "WHERE "+tblStocks+".CATEGORY="+tblCategory+".ID "
                     + "AND "+tblStocks+".WAREHOUSE="+tblWarehouse+".CODE ";
-            System.out.println(sql);
+            System.out.println("QUERY::: "+sql);
             rs = statement.executeQuery(sql);
                 
             DefaultTableModel model = (DefaultTableModel) this.StocksTable.getModel();
@@ -71,7 +72,9 @@ public class StocksPanel extends javax.swing.JPanel {
                                     rs.getString("CODE"), 
                                     rs.getString("NAME"), 
                                     rs.getString("CATEGORY"),
+//                        rs.getInt("CATEGORY"),
                                     rs.getString("WAREHOUSE"),
+//                        rs.getInt("WAREHOUSE"),
                                     rs.getString("UNIT"),
                                     rs.getInt("AMOUNT_PER_UNIT"),
                                     String.format("%,.2f", rs.getDouble("WHOLESALE_PRICE")),
