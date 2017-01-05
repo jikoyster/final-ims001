@@ -1,5 +1,5 @@
 #database credentials
-#dbname .= dbpath
+#dbname [= dbpath
 #username .= jake
 #password .= password
 
