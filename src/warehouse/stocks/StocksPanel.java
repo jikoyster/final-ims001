@@ -58,7 +58,7 @@ public class StocksPanel extends javax.swing.JPanel {
     void update_table(){
         try { 
 //            String sql = "SELECT * FROM "+this.tblStocks;
-            String sql = "SELECT "+tblStocks+".CODE as CODE, "+tblStocks+".NAME, "+tblCategory+".NAME as CATEGORY, "+tblWarehouse+".NAME as WAREHOUSE, UNIT, AMOUNT_PER_UNIT, CRITICAL_LEVEL, BALANCE, WHOLESALE_PRICE, RETAIL_PRICE, "+tblStocks+".DATEADDED as Date "
+            String sql = "SELECT "+tblStocks+".CODE as CODE, "+tblStocks+".NAME, "+tblCategory+".NAME as CATEGORY, "+tblWarehouse+".NAME as WAREHOUSE, UNIT, AMOUNT_PER_UNIT, CRITICAL_LEVEL, BALANCE, WHOLESALE_PRICE, RETAIL_PRICE, CRITICAL_LEVEL, BALANCE, "+tblStocks+".DATEADDED as Date "
                     + "FROM "+tblStocks +", "+tblCategory+", "+ tblWarehouse +" "
                     + "WHERE "+tblStocks+".CATEGORY="+tblCategory+".ID "
                     + "AND "+tblStocks+".WAREHOUSE="+tblWarehouse+".CODE ";
@@ -79,6 +79,8 @@ public class StocksPanel extends javax.swing.JPanel {
                                     rs.getInt("AMOUNT_PER_UNIT"),
                                     String.format("%,.2f", rs.getDouble("WHOLESALE_PRICE")),
                                     String.format("%,.2f", rs.getDouble("RETAIL_PRICE")),
+                                    "<HTML><SPAN COLOR='RED'>"+rs.getString("CRITICAL_LEVEL")+"</SPAN></HTML>",
+                                    "<HTML><SPAN COLOR='GREEN'>"+rs.getString("BALANCE")+"</SPAN></HTML>",
                                     "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
                };
                model.addRow(rowData);
@@ -88,14 +90,17 @@ public class StocksPanel extends javax.swing.JPanel {
 
             DefaultTableCellRenderer usercolRenderer = new DefaultTableCellRenderer();
             usercolRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-            
 //            this.CustomersTable.getColumnModel().getColumn(0).setMaxWidth(200);
-//            this.CustomersTable.getColumnModel().getColumn(1).setCellRenderer(usercolRenderer);
-//            this.CustomersTable.getColumnModel().getColumn(2).setCellRenderer(usercolRenderer);
+            this.StocksTable.getColumnModel().getColumn(6).setCellRenderer(usercolRenderer);
+            this.StocksTable.getColumnModel().getColumn(7).setCellRenderer(usercolRenderer);
             
             DefaultTableCellRenderer idcolRenderer = new DefaultTableCellRenderer();
             idcolRenderer.setHorizontalAlignment(SwingConstants.CENTER);
             this.StocksTable.getColumnModel().getColumn(0).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(4).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(5).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(8).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(9).setCellRenderer(idcolRenderer);
             
             config.Functions.updateRowHeights(StocksTable);
             this.StocksTable.repaint();
@@ -157,11 +162,11 @@ public class StocksPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Code", "Name", "Category", "Warehouse", "Unit", "Amount per Unit", "Wholesale Price", "Retail Price", "Date"
+                "Code", "Name", "Category", "Warehouse", "Unit", "Amount per Unit", "Wholesale Price", "Retail Price", "Critical Lvl", "Balance", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
