@@ -96,7 +96,7 @@ public class Database {
 //            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 
             this.conn = DriverManager.getConnection(
-                    "jdbc:derby://localhost:1527/" + this.dbName, // + ";create=true",
+                    "jdbc:derby://localhost:1527/" + this.dbName + ";create=true",
                     this.username, this.password);
             
             System.out.println("Database Connected!");
@@ -110,13 +110,23 @@ public class Database {
         
         
         try {
-            //CUSTOMERS
-            createCustomersTable();
+            //WAREHOUSE
+            createCategoryTable();
+            
+            //WAREHOUSE
+            createWarehouseTable();
+            
             
             //USERS
             createTableUserType();
             createTableUser();
             createUserTypes();
+            
+            //CUSTOMERS
+            createCustomersTable();
+            
+            //SUPPLIERS
+            createSuppliersTable();
         } catch (SQLException sQLException) {
         }
         
@@ -170,6 +180,47 @@ public class Database {
                 + "PHONE VARCHAR(25),"
                 + "EMAIL VARCHAR(25),"
                 + "FAX VARCHAR(25),"
+                + "DATEADDED TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                + ")");
+    }
+
+    private void createSuppliersTable() throws SQLException {
+        Statement statement = this.conn.createStatement();        
+        statement.execute(""
+                + "CREATE TABLE SUPPLIERS "
+                + "("
+                + "CODE VARCHAR(25) PRIMARY KEY,"
+                + "NAME VARCHAR(25),"
+                + "ADDRESS VARCHAR(500),"
+                + "PHONE VARCHAR(25),"
+                + "EMAIL VARCHAR(25),"
+                + "FAX VARCHAR(25),"
+                + "DATEADDED TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                + ")");
+    }
+
+    private void createWarehouseTable() throws SQLException {
+        Statement statement = this.conn.createStatement();        
+        statement.execute(""
+                + "CREATE TABLE WAREHOUSE "
+                + "("
+                + "CODE VARCHAR(25) PRIMARY KEY,"
+                + "NAME VARCHAR(25),"
+                + "ADDRESS VARCHAR(500),"
+                + "PHONE VARCHAR(25),"
+                + "EMAIL VARCHAR(25),"
+                + "FAX VARCHAR(25),"
+                + "DATEADDED TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                + ")");
+    }
+
+    private void createCategoryTable() throws SQLException {
+        Statement statement = this.conn.createStatement();        
+        statement.execute(""
+                + "CREATE TABLE CATEGORY "
+                + "("
+                + "ID INTEGER PRIMARY KEY,"
+                + "NAME VARCHAR(25),"
                 + "DATEADDED TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
                 + ")");
     }
