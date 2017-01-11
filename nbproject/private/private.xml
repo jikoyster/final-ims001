@@ -3,12 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/InvoicesPanel.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/warehouse/stocks/StocksPanel.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/main/Mainframe.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/main/LoginFrame.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/config/Database.java</file>
-            <file>file:/D:/Ozamiz/projects/final/Ims001/src/transactions/invoices/InvoiceEditorPanel.java</file>
+            <file>file:/D:/Ozamiz/projects/final/fromGIT/final-ims001/src/config/Database.java</file>
+            <file>file:/D:/Ozamiz/projects/final/fromGIT/final-ims001/src/accounts/users/UsersPanel.java</file>
         </group>
     </open-files>
 </project-private>

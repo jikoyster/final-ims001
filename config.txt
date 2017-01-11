@@ -1,7 +1,3 @@
-#dbname .= dbims
-#username .= dbims_admin
-#password .= DB!M$_5DM!N
-
-dbname = ims001
+dbname = D:/Ozamiz/projects/final/fromGIT/final-ims001/dbims001
 username = ims001
 password = !M$001

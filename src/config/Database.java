@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,9 +20,9 @@ import java.util.logging.Logger;
  * @author Jake-LAPTOP
  */
 public class Database {
-    private Connection conn;
+    private Connection conn = null;
     
-    public String dbname, username, password; 
+    public String dbName, username, password; 
     /*
     * initialize Database() and connect to the named database on config.txt file
     * dbname    = ""
@@ -30,6 +31,7 @@ public class Database {
     * from this object you can get the connection to create Statement to call executeQuery()
     */
     public Database() throws SQLException{
+        
         try {
             File file = new File("config.txt");
             Scanner input = new Scanner(file);
@@ -40,7 +42,7 @@ public class Database {
                 if( line.contains("dbname = ") ){
                     String[] dbnameArr = line.split("dbname = ");
                     this.set_dbname(dbnameArr[1]);
-                    System.out.println("Database: "+dbname);
+                    System.out.println("Database: "+dbName);
                 }else if( line.contains("username = ") ){
                     String[] usernameArr = line.split("username = ");
                     this.set_username(usernameArr[1]);
@@ -62,7 +64,7 @@ public class Database {
         
     //setters
     public void set_dbname(String databaseName){
-        this.dbname = databaseName;
+        this.dbName = databaseName;
     }
     
     public void set_username(String databaseUsername){
@@ -74,7 +76,7 @@ public class Database {
     }
     //getters
     public String get_dbname(){
-        return this.dbname;
+        return this.dbName;
     }
     
     public String get_username(){
@@ -89,17 +91,87 @@ public class Database {
         return this.conn;
     }
     
-    public void loadDatabase() throws SQLException {
+    public void loadDatabase() throws SQLException{
         try {
+//            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+
             this.conn = DriverManager.getConnection(
-                    "jdbc:derby://localhost:1527/" + this.dbname,
+                    "jdbc:derby://localhost:1527/" + this.dbName, // + ";create=true",
                     this.username, this.password);
+            
             System.out.println("Database Connected!");
         } catch (SQLException sQLException) {
-//            sQLException.printStackTrace();
-//            this.conn = DriverManager.getConnection(
-//                    "jdbc:derby:" + this.dbname,
-//                    this.username, this.password);
+            sQLException.printStackTrace();
+        } 
+//        catch (ClassNotFoundException ex) {
+//            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
+        
+        
+        try {
+            //CUSTOMERS
+            createCustomersTable();
+            
+            //USERS
+            createTableUserType();
+            createTableUser();
+            createUserTypes();
+        } catch (SQLException sQLException) {
         }
+        
     }
+
+    private void createUserTypes() throws SQLException {
+        Statement statement = this.conn.createStatement();
+        
+        statement.execute("INSERT INTO USER_TYPE "
+                + "(TYPEID, TYPESTRING) VALUES(1, 'admin') ");
+        statement.execute("INSERT INTO USER_TYPE "
+                + "(TYPEID, TYPESTRING) VALUES(2, 'secretary') ");
+        statement.execute("INSERT INTO USER_TYPE "
+                + "(TYPEID, TYPESTRING) VALUES(3, 'encoder') ");
+    }
+    
+    
+
+    private void createTableUser() throws SQLException {
+        Statement statement = this.conn.createStatement();
+        
+        statement.execute(""
+                + "CREATE TABLE USERS("
+                + "ID INTEGER PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
+                + "USERNAME VARCHAR(50),"
+                + "PASSWORD VARCHAR(50),"
+                + "DATEADDED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+                + "TYPEID INTEGER REFERENCES USER_TYPE(TYPEID),"
+                + "LOG VARCHAR(1000)"
+                + ")");
+    }
+
+    private void createTableUserType() throws SQLException {
+        Statement statement = this.conn.createStatement();
+        statement.execute(""
+                + "CREATE TABLE USER_TYPE "
+                + "("
+                + "TYPEID INTEGER PRIMARY KEY,"
+                + "TYPESTRING VARCHAR(25)"
+                + ")");
+    }
+
+    private void createCustomersTable() throws SQLException {
+        Statement statement = this.conn.createStatement();        
+        statement.execute(""
+                + "CREATE TABLE CUSTOMERS "
+                + "("
+                + "CODE VARCHAR(25) PRIMARY KEY,"
+                + "NAME VARCHAR(25),"
+                + "ADDRESS VARCHAR(500),"
+                + "PHONE VARCHAR(25),"
+                + "EMAIL VARCHAR(25),"
+                + "FAX VARCHAR(25),"
+                + "DATEADDED TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                + ")");
+    }
+    
 }//endClass
