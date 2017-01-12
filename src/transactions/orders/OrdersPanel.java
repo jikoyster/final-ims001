@@ -61,7 +61,7 @@ public class OrdersPanel extends javax.swing.JPanel {
     void update_table(){
         try { 
             String sql = ""
-                    + "SELECT ID, TOTAL_AMOUNT, "+this.tblSuppliers+".NAME AS SUPPLIER, "+this.tblOrders+".DATEADDED as DATE "
+                    + "SELECT ID, TOTAL_AMOUNT, "+this.tblSuppliers+".NAME AS SUPPLIER, STATUS, "+this.tblOrders+".DATEADDED as DATE "
                     + "FROM "+this.tblOrders+" INNER JOIN "+this.tblSuppliers+" "
                     + "ON "+this.tblSuppliers+".CODE="+this.tblOrders+".SUPPLIER";
             rs = statement.executeQuery(sql);
@@ -73,6 +73,7 @@ public class OrdersPanel extends javax.swing.JPanel {
                                     rs.getString("ID"), 
                                     String.format("%,.2f", rs.getDouble("TOTAL_AMOUNT")),
                                     rs.getString("SUPPLIER"),
+                                    rs.getString("STATUS"),
                                     "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
                };
                model.addRow(rowData);
@@ -147,11 +148,11 @@ public class OrdersPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Total Amount", "Supplier", "Date"
+                "ID", "Total Amount", "Supplier", "Status", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
