@@ -41,6 +41,7 @@ public class OrdersPanel extends javax.swing.JPanel {
     private String tblOrders = "ORDERS";
     private String tblOrderItems = "ORDER_ITEMS";
     private String tblSuppliers = "SUPPLIERS";
+    private String tblStocks = "STOCKS";
     
     public boolean isUpdate = false;
     /**
@@ -110,6 +111,7 @@ public class OrdersPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         OrdersTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        btn_changeStatus = new javax.swing.JButton();
 
         newBtn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         newBtn.setForeground(new java.awt.Color(0, 153, 0));
@@ -168,6 +170,15 @@ public class OrdersPanel extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Anton", 0, 36)); // NOI18N
         jLabel1.setText("ORDERS PAGE MANAGEMENT");
 
+        btn_changeStatus.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btn_changeStatus.setMnemonic('h');
+        btn_changeStatus.setText("CHANGE STATUS");
+        btn_changeStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_changeStatusActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -181,9 +192,11 @@ public class OrdersPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(updateBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteBtn))
+                        .addComponent(deleteBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_changeStatus))
                     .addComponent(jLabel1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(199, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,7 +208,8 @@ public class OrdersPanel extends javax.swing.JPanel {
                     .addComponent(updateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(newBtn)
-                        .addComponent(deleteBtn)))
+                        .addComponent(deleteBtn)
+                        .addComponent(btn_changeStatus)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
         );
@@ -368,9 +382,43 @@ public class OrdersPanel extends javax.swing.JPanel {
         update_table();
     }//GEN-LAST:event_deleteBtnActionPerformed
 
+    private void btn_changeStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_changeStatusActionPerformed
+        Statement statement = null;
+        int srow = this.OrdersTable.getSelectedRow();
+        String orderid = (String) this.OrdersTable.getValueAt(srow, 0);
+        
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Update Order Status?", "Update Order Status",
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            try {
+                statement = this.conn.createStatement();
+                statement.execute("UPDATE "+this.tblOrders + " "
+                        + "SET STATUS='OK' WHERE ID='"+ orderid +"'");
+                
+                /***** GET QUANTITY FROM ORDER_ITEMS TABLE ******/
+                int quantity = 0;
+                ResultSet rs = statement.executeQuery("SELECT QUANTITY FROM "+ this.tblOrderItems +" WHERE ORDER_REF='"+ orderid +"'");
+                while( rs.next() ){
+                    quantity = rs.getInt("QUANTITY");
+                }
+                /*\*/
+                
+                String updateSql = "UPDATE STOCKS "
+                        + "SET BALANCE=BALANCE+"+ quantity;
+                System.out.println(updateSql);
+                statement.execute(updateSql);
+            } catch (SQLException ex) {
+                Logger.getLogger(OrdersPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            update_table();
+        }
+    }//GEN-LAST:event_btn_changeStatusActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable OrdersTable;
+    private javax.swing.JButton btn_changeStatus;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

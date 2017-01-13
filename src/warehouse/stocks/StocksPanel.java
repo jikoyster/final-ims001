@@ -55,13 +55,67 @@ public class StocksPanel extends javax.swing.JPanel {
         }
     }
     
-    void update_table(){
+    public void update_table(){
         try { 
-//            String sql = "SELECT * FROM "+this.tblStocks;
             String sql = "SELECT "+tblStocks+".CODE as CODE, "+tblStocks+".NAME, "+tblCategory+".NAME as CATEGORY, "+tblWarehouse+".NAME as WAREHOUSE, UNIT, AMOUNT_PER_UNIT, CRITICAL_LEVEL, BALANCE, WHOLESALE_PRICE, RETAIL_PRICE, CRITICAL_LEVEL, BALANCE, "+tblStocks+".DATEADDED as Date "
                     + "FROM "+tblStocks +", "+tblCategory+", "+ tblWarehouse +" "
                     + "WHERE "+tblStocks+".CATEGORY="+tblCategory+".ID "
                     + "AND "+tblStocks+".WAREHOUSE="+tblWarehouse+".CODE ";
+            System.out.println("QUERY::: "+sql);
+            rs = statement.executeQuery(sql);
+                
+            DefaultTableModel model = (DefaultTableModel) this.StocksTable.getModel();
+            model.setRowCount(0); //clearn table
+            while( rs.next() ){
+               Object[] rowData = {
+                                    rs.getString("CODE"), 
+                                    rs.getString("NAME"), 
+                                    rs.getString("CATEGORY"),
+//                        rs.getInt("CATEGORY"),
+                                    rs.getString("WAREHOUSE"),
+//                        rs.getInt("WAREHOUSE"),
+                                    rs.getString("UNIT"),
+                                    rs.getInt("AMOUNT_PER_UNIT"),
+                                    String.format("%,.2f", rs.getDouble("WHOLESALE_PRICE")),
+                                    String.format("%,.2f", rs.getDouble("RETAIL_PRICE")),
+                                    "<HTML><SPAN COLOR='RED'>"+rs.getString("CRITICAL_LEVEL")+"</SPAN></HTML>",
+                                    "<HTML><SPAN COLOR='GREEN'>"+rs.getString("BALANCE")+"</SPAN></HTML>",
+                                    "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
+               };
+               model.addRow(rowData);
+            }
+            
+            this.StocksTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 16));
+
+            DefaultTableCellRenderer usercolRenderer = new DefaultTableCellRenderer();
+            usercolRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+//            this.CustomersTable.getColumnModel().getColumn(0).setMaxWidth(200);
+            this.StocksTable.getColumnModel().getColumn(6).setCellRenderer(usercolRenderer);
+            this.StocksTable.getColumnModel().getColumn(7).setCellRenderer(usercolRenderer);
+            
+            DefaultTableCellRenderer idcolRenderer = new DefaultTableCellRenderer();
+            idcolRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            this.StocksTable.getColumnModel().getColumn(0).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(4).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(5).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(8).setCellRenderer(idcolRenderer);
+            this.StocksTable.getColumnModel().getColumn(9).setCellRenderer(idcolRenderer);
+            
+            config.Functions.updateRowHeights(StocksTable);
+            this.StocksTable.repaint();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    /***** CRITICAL STOCKS *****/
+    public void update_criticalStocks_table(){
+        try { 
+            String sql = "SELECT "+tblStocks+".CODE as CODE, "+tblStocks+".NAME, "+tblCategory+".NAME as CATEGORY, "+tblWarehouse+".NAME as WAREHOUSE, UNIT, AMOUNT_PER_UNIT, CRITICAL_LEVEL, BALANCE, WHOLESALE_PRICE, RETAIL_PRICE, CRITICAL_LEVEL, BALANCE, "+tblStocks+".DATEADDED as Date "
+                    + "FROM "+tblStocks +", "+tblCategory+", "+ tblWarehouse +" "
+                    + "WHERE "+tblStocks+".CATEGORY="+tblCategory+".ID "
+                    + "AND "+tblStocks+".WAREHOUSE="+tblWarehouse+".CODE "
+                    + "AND "+tblStocks+".BALANCE<="+tblStocks+".CRITICAL_LEVEL";
             System.out.println("QUERY::: "+sql);
             rs = statement.executeQuery(sql);
                 
@@ -118,12 +172,40 @@ public class StocksPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        StocksTable = new javax.swing.JTable();
+        stocksTitleLbl = new javax.swing.JLabel();
+        btnPanel = new javax.swing.JPanel();
         newBtn = new javax.swing.JButton();
         updateBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        StocksTable = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
+
+        StocksTable.setAutoCreateRowSorter(true);
+        StocksTable.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        StocksTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Code", "Name", "Category", "Warehouse", "Unit", "Amount per Unit", "Wholesale Price", "Retail Price", "Critical Lvl", "Balance", "Date"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        StocksTable.setFocusable(false);
+        StocksTable.setIntercellSpacing(new java.awt.Dimension(10, 10));
+        StocksTable.setMinimumSize(new java.awt.Dimension(100, 120));
+        StocksTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(StocksTable);
+
+        stocksTitleLbl.setFont(new java.awt.Font("Anton", 0, 36)); // NOI18N
+        stocksTitleLbl.setText("Stocks");
 
         newBtn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         newBtn.setForeground(new java.awt.Color(0, 153, 0));
@@ -155,32 +237,29 @@ public class StocksPanel extends javax.swing.JPanel {
             }
         });
 
-        StocksTable.setAutoCreateRowSorter(true);
-        StocksTable.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
-        StocksTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Code", "Name", "Category", "Warehouse", "Unit", "Amount per Unit", "Wholesale Price", "Retail Price", "Critical Lvl", "Balance", "Date"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        StocksTable.setFocusable(false);
-        StocksTable.setIntercellSpacing(new java.awt.Dimension(10, 10));
-        StocksTable.setMinimumSize(new java.awt.Dimension(100, 120));
-        StocksTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(StocksTable);
-
-        jLabel1.setFont(new java.awt.Font("Anton", 0, 36)); // NOI18N
-        jLabel1.setText("Stocks");
+        javax.swing.GroupLayout btnPanelLayout = new javax.swing.GroupLayout(btnPanel);
+        btnPanel.setLayout(btnPanelLayout);
+        btnPanelLayout.setHorizontalGroup(
+            btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnPanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(newBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(updateBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(deleteBtn)
+                .addGap(0, 0, 0))
+        );
+        btnPanelLayout.setVerticalGroup(
+            btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnPanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(newBtn)
+                    .addComponent(updateBtn)
+                    .addComponent(deleteBtn))
+                .addGap(0, 0, 0))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -190,27 +269,19 @@ public class StocksPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(newBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(updateBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteBtn))
-                    .addComponent(jLabel1))
+                    .addComponent(stocksTitleLbl)
+                    .addComponent(btnPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(stocksTitleLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(newBtn)
-                    .addComponent(updateBtn)
-                    .addComponent(deleteBtn))
+                .addComponent(btnPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -433,12 +504,17 @@ public class StocksPanel extends javax.swing.JPanel {
         return stock;
     }
     
+    public void setPanelTitle(String title){
+        this.stocksTitleLbl.setText(title);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable StocksTable;
+    public javax.swing.JPanel btnPanel;
     private javax.swing.JButton deleteBtn;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton newBtn;
+    public javax.swing.JLabel stocksTitleLbl;
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }

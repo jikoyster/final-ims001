@@ -218,7 +218,7 @@ public class UsersPanel extends javax.swing.JPanel {
                 newuser.setTypeid(panel.get_type()); //gets Object UserType
                 
                 String sql = "INSERT INTO " + table + " (USERNAME, PASSWORD, DATEADDED, LOG, TYPEID) "
-                        + "VALUES ('" + newuser.getUsername() + "', '" + Functions.strToMD5(newuser.getPassword()) 
+                        + "VALUES ('" + newuser.getUsername() + "', '" + newuser.getPassword() 
                         + "', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, " 
                         + newuser.getTypeid().getTypeid() + ")";
                 System.out.println(sql);

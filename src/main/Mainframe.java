@@ -5,14 +5,17 @@
  */
 package main;
 
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import warehouse.stocks.StocksPanel;
 
 /**
  *
@@ -31,6 +34,34 @@ public class Mainframe extends javax.swing.JFrame {
     public Mainframe(Connection connection) {
         initComponents();
         this.conn = connection;
+        
+        this.setCriticalPanel();
+    }
+    
+    public void setCriticalPanel(){
+        try {
+            this.mainPanel.setVisible(false);
+            if( this.currentPanel != null){
+                this.getContentPane().removeAll();
+            }
+            
+            StocksPanel criticalLevel = new warehouse.stocks.StocksPanel(this.conn);
+            criticalLevel.stocksTitleLbl.setText("Stocks in Critical Level");
+            criticalLevel.stocksTitleLbl.setForeground(Color.red);
+            ImageIcon icon = new ImageIcon( getClass().getResource("/main/icons/warning.png") );
+            criticalLevel.stocksTitleLbl.setIcon(icon);
+            
+            criticalLevel.btnPanel.setVisible(false);
+            criticalLevel.update_criticalStocks_table();
+            this.currentPanel = criticalLevel;            
+            
+            getContentPane().add(this.currentPanel);
+            validate();
+            repaint();
+        } catch (Exception e) {
+            System.out.println("STOCKS PAGE");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -44,11 +75,8 @@ public class Mainframe extends javax.swing.JFrame {
 
         jMenuItem1 = new javax.swing.JMenuItem();
         mainPanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        btnTest = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
-        homeM = new javax.swing.JMenu();
+        criticalLevelM = new javax.swing.JMenu();
         transactionsM = new javax.swing.JMenu();
         invoiceMI = new javax.swing.JMenuItem();
         ordersMI = new javax.swing.JMenuItem();
@@ -72,71 +100,32 @@ public class Mainframe extends javax.swing.JFrame {
 
         mainPanel.setBackground(new java.awt.Color(102, 102, 102));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/icons/warning.png"))); // NOI18N
-        jLabel1.setText("TEST ALERT");
-
-        btnTest.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/icons/loginIcon.png"))); // NOI18N
-        btnTest.setText("test button with icon");
-        btnTest.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTestActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(93, 93, 93)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnTest)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 437, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(237, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(63, 63, 63)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnTest)
-                .addContainerGap(82, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(521, Short.MAX_VALUE))
+            .addGap(0, 1300, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(407, Short.MAX_VALUE))
+            .addGap(0, 680, Short.MAX_VALUE)
         );
 
         getContentPane().add(mainPanel);
 
-        homeM.setMnemonic('h');
-        homeM.setText("Home");
-        homeM.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        homeM.addMenuListener(new javax.swing.event.MenuListener() {
+        criticalLevelM.setMnemonic('c');
+        criticalLevelM.setText("Critical Level");
+        criticalLevelM.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        criticalLevelM.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-                homeMMenuSelected(evt);
+                criticalLevelMMenuSelected(evt);
             }
         });
-        jMenuBar1.add(homeM);
+        jMenuBar1.add(criticalLevelM);
 
         transactionsM.setMnemonic('t');
         transactionsM.setText("Transactions");
@@ -305,18 +294,9 @@ public class Mainframe extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_usersMIActionPerformed
 
-    private void homeMMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_homeMMenuSelected
-        try {
-            this.currentPanel.setVisible(false);
-            
-            this.mainPanel.setVisible(true);
-            validate();
-            repaint();
-        } catch (Exception e) {
-            System.out.println("HOMEPAGE");
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_homeMMenuSelected
+    private void criticalLevelMMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_criticalLevelMMenuSelected
+        this.setCriticalPanel();
+    }//GEN-LAST:event_criticalLevelMMenuSelected
 
     private void customersMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersMIActionPerformed
         try {
@@ -408,10 +388,6 @@ public class Mainframe extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_suppliersMIActionPerformed
 
-    private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
-        JOptionPane.showMessageDialog(null, "Just Clicked");
-    }//GEN-LAST:event_btnTestActionPerformed
-
     private void transactionsMMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_transactionsMMenuSelected
         // TODO add your handling code here:
     }//GEN-LAST:event_transactionsMMenuSelected
@@ -493,15 +469,12 @@ public class Mainframe extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu accountsM;
-    private javax.swing.JButton btnTest;
     private javax.swing.JMenuItem categoryMI;
+    private javax.swing.JMenu criticalLevelM;
     private javax.swing.JMenuItem customersMI;
-    private javax.swing.JMenu homeM;
     private javax.swing.JMenuItem invoiceMI;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenu logoutMI;
     private javax.swing.JPanel mainPanel;
