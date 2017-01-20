@@ -9,7 +9,7 @@ import transactions.invoices.InvoiceItems;
 import warehouse.Warehouse;
 import warehouse.category.Category;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-01-14T02:09:52")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-01-19T00:48:20")
 @StaticMetamodel(Stocks.class)
 public class Stocks_ { 
 

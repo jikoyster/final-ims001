@@ -89,6 +89,9 @@ public class Mainframe extends javax.swing.JFrame {
         usersMI = new javax.swing.JMenuItem();
         customersMI = new javax.swing.JMenuItem();
         suppliersMI = new javax.swing.JMenuItem();
+        criticalLevelM1 = new javax.swing.JMenu();
+        salesReportMI = new javax.swing.JMenuItem();
+        inventoryMI = new javax.swing.JMenuItem();
         logoutMI = new javax.swing.JMenu();
 
         jMenuItem1.setText("jMenuItem1");
@@ -243,6 +246,41 @@ public class Mainframe extends javax.swing.JFrame {
         accountsM.add(suppliersMI);
 
         jMenuBar1.add(accountsM);
+
+        criticalLevelM1.setMnemonic('r');
+        criticalLevelM1.setText("Reports");
+        criticalLevelM1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        criticalLevelM1.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                criticalLevelM1MenuSelected(evt);
+            }
+        });
+
+        salesReportMI.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        salesReportMI.setMnemonic('s');
+        salesReportMI.setText("Sales Report");
+        salesReportMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salesReportMIActionPerformed(evt);
+            }
+        });
+        criticalLevelM1.add(salesReportMI);
+
+        inventoryMI.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        inventoryMI.setMnemonic('i');
+        inventoryMI.setText("Inventory Report");
+        inventoryMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inventoryMIActionPerformed(evt);
+            }
+        });
+        criticalLevelM1.add(inventoryMI);
+
+        jMenuBar1.add(criticalLevelM1);
 
         logoutMI.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         logoutMI.setMnemonic('o');
@@ -427,6 +465,18 @@ public class Mainframe extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_ordersMIActionPerformed
+
+    private void criticalLevelM1MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_criticalLevelM1MenuSelected
+        // TODO add your handling code here:
+    }//GEN-LAST:event_criticalLevelM1MenuSelected
+
+    private void salesReportMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salesReportMIActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_salesReportMIActionPerformed
+
+    private void inventoryMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inventoryMIActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inventoryMIActionPerformed
     
     public void logoutMenuItem_setText(String status){
         this.logoutMI.setText(status);
@@ -471,7 +521,9 @@ public class Mainframe extends javax.swing.JFrame {
     private javax.swing.JMenu accountsM;
     private javax.swing.JMenuItem categoryMI;
     private javax.swing.JMenu criticalLevelM;
+    private javax.swing.JMenu criticalLevelM1;
     private javax.swing.JMenuItem customersMI;
+    private javax.swing.JMenuItem inventoryMI;
     private javax.swing.JMenuItem invoiceMI;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -479,6 +531,7 @@ public class Mainframe extends javax.swing.JFrame {
     private javax.swing.JMenu logoutMI;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuItem ordersMI;
+    private javax.swing.JMenuItem salesReportMI;
     private javax.swing.JMenuItem stocksMI;
     private javax.swing.JMenuItem suppliersMI;
     private javax.swing.JMenu transactionsM;

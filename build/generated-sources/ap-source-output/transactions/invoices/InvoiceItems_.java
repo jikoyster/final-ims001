@@ -6,7 +6,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 import transactions.invoices.Invoices;
 import warehouse.stocks.Stocks;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-01-14T02:09:52")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-01-19T00:48:20")
 @StaticMetamodel(InvoiceItems.class)
 public class InvoiceItems_ { 
 

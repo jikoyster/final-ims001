@@ -112,6 +112,8 @@ public class OrdersPanel extends javax.swing.JPanel {
         OrdersTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         btn_changeStatus = new javax.swing.JButton();
+        displayPENDING = new javax.swing.JButton();
+        displayRECEIVED = new javax.swing.JButton();
 
         newBtn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         newBtn.setForeground(new java.awt.Color(0, 153, 0));
@@ -179,14 +181,35 @@ public class OrdersPanel extends javax.swing.JPanel {
             }
         });
 
+        displayPENDING.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        displayPENDING.setMnemonic(KeyEvent.VK_F1);
+        displayPENDING.setText("Display PENDING Orders");
+        displayPENDING.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                displayPENDINGActionPerformed(evt);
+            }
+        });
+
+        displayRECEIVED.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        displayRECEIVED.setMnemonic(KeyEvent.VK_F2);
+        displayRECEIVED.setText("Display RECIEVED Orders");
+        displayRECEIVED.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                displayRECEIVEDActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 796, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1045, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(newBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -194,9 +217,12 @@ public class OrdersPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_changeStatus))
-                    .addComponent(jLabel1))
-                .addContainerGap(199, Short.MAX_VALUE))
+                        .addComponent(btn_changeStatus)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(displayPENDING)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(displayRECEIVED)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -209,6 +235,8 @@ public class OrdersPanel extends javax.swing.JPanel {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(newBtn)
                         .addComponent(deleteBtn)
+                        .addComponent(displayPENDING)
+                        .addComponent(displayRECEIVED)
                         .addComponent(btn_changeStatus)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
@@ -393,7 +421,7 @@ public class OrdersPanel extends javax.swing.JPanel {
             try {
                 statement = this.conn.createStatement();
                 statement.execute("UPDATE "+this.tblOrders + " "
-                        + "SET STATUS='OK' WHERE ID='"+ orderid +"'");
+                        + "SET STATUS='RECEIVED' WHERE ID='"+ orderid +"'");
                 
                 /***** GET QUANTITY FROM ORDER_ITEMS TABLE ******/
                 int quantity = 0;
@@ -415,11 +443,89 @@ public class OrdersPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btn_changeStatusActionPerformed
 
+    private void displayPENDINGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayPENDINGActionPerformed
+        try { 
+            String sql = ""
+                    + "SELECT ID, TOTAL_AMOUNT, "+this.tblSuppliers+".NAME AS SUPPLIER, STATUS, "+this.tblOrders+".DATEADDED as DATE "
+                    + "FROM "+this.tblOrders+" INNER JOIN "+this.tblSuppliers+" "
+                    + "ON "+this.tblSuppliers+".CODE="+this.tblOrders+".SUPPLIER "
+                    + "AND "+this.tblOrders+".STATUS='PENDING'";
+            rs = statement.executeQuery(sql);
+            
+            DefaultTableModel model = (DefaultTableModel) this.OrdersTable.getModel();
+            model.setRowCount(0); //clean table
+            while( rs.next() ){
+               Object[] rowData = {
+                                    rs.getString("ID"), 
+                                    String.format("%,.2f", rs.getDouble("TOTAL_AMOUNT")),
+                                    rs.getString("SUPPLIER"),
+                                    rs.getString("STATUS"),
+                                    "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
+               };
+               model.addRow(rowData);
+            }
+            
+            this.OrdersTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 16));
+
+            DefaultTableCellRenderer usercolRenderer = new DefaultTableCellRenderer();
+            usercolRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+            
+            DefaultTableCellRenderer idcolRenderer = new DefaultTableCellRenderer();
+            idcolRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            this.OrdersTable.getColumnModel().getColumn(0).setCellRenderer(idcolRenderer);
+            
+            config.Functions.updateRowHeights(OrdersTable);
+            this.OrdersTable.repaint();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_displayPENDINGActionPerformed
+
+    private void displayRECEIVEDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayRECEIVEDActionPerformed
+        try { 
+            String sql = ""
+                    + "SELECT ID, TOTAL_AMOUNT, "+this.tblSuppliers+".NAME AS SUPPLIER, STATUS, "+this.tblOrders+".DATEADDED as DATE "
+                    + "FROM "+this.tblOrders+" INNER JOIN "+this.tblSuppliers+" "
+                    + "ON "+this.tblSuppliers+".CODE="+this.tblOrders+".SUPPLIER "
+                    + "AND "+this.tblOrders+".STATUS='RECEIVED'";
+            rs = statement.executeQuery(sql);
+            
+            DefaultTableModel model = (DefaultTableModel) this.OrdersTable.getModel();
+            model.setRowCount(0); //clearn table
+            while( rs.next() ){
+               Object[] rowData = {
+                                    rs.getString("ID"), 
+                                    String.format("%,.2f", rs.getDouble("TOTAL_AMOUNT")),
+                                    rs.getString("SUPPLIER"),
+                                    rs.getString("STATUS"),
+                                    "<HTML>"+ new SimpleDateFormat("MMMM dd, yyyy\nEEEE hh:mm a").format(rs.getTimestamp("DATE")).replace("\n", "<BR>")+"</HTML>"
+               };
+               model.addRow(rowData);
+            }
+            
+            this.OrdersTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 16));
+
+            DefaultTableCellRenderer usercolRenderer = new DefaultTableCellRenderer();
+            usercolRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+            
+            DefaultTableCellRenderer idcolRenderer = new DefaultTableCellRenderer();
+            idcolRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            this.OrdersTable.getColumnModel().getColumn(0).setCellRenderer(idcolRenderer);
+            
+            config.Functions.updateRowHeights(OrdersTable);
+            this.OrdersTable.repaint();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_displayRECEIVEDActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable OrdersTable;
     private javax.swing.JButton btn_changeStatus;
     private javax.swing.JButton deleteBtn;
+    private javax.swing.JButton displayPENDING;
+    private javax.swing.JButton displayRECEIVED;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton newBtn;
