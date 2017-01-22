@@ -89,8 +89,9 @@ public class Mainframe extends javax.swing.JFrame {
         usersMI = new javax.swing.JMenuItem();
         customersMI = new javax.swing.JMenuItem();
         suppliersMI = new javax.swing.JMenuItem();
-        criticalLevelM1 = new javax.swing.JMenu();
+        ReportsM = new javax.swing.JMenu();
         salesReportMI = new javax.swing.JMenuItem();
+        incomeStatementMI = new javax.swing.JMenuItem();
         inventoryMI = new javax.swing.JMenuItem();
         logoutMI = new javax.swing.JMenu();
 
@@ -247,16 +248,16 @@ public class Mainframe extends javax.swing.JFrame {
 
         jMenuBar1.add(accountsM);
 
-        criticalLevelM1.setMnemonic('r');
-        criticalLevelM1.setText("Reports");
-        criticalLevelM1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        criticalLevelM1.addMenuListener(new javax.swing.event.MenuListener() {
+        ReportsM.setMnemonic('r');
+        ReportsM.setText("Reports");
+        ReportsM.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        ReportsM.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-                criticalLevelM1MenuSelected(evt);
+                ReportsMMenuSelected(evt);
             }
         });
 
@@ -268,19 +269,29 @@ public class Mainframe extends javax.swing.JFrame {
                 salesReportMIActionPerformed(evt);
             }
         });
-        criticalLevelM1.add(salesReportMI);
+        ReportsM.add(salesReportMI);
+
+        incomeStatementMI.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        incomeStatementMI.setMnemonic('i');
+        incomeStatementMI.setText("Income Statement");
+        incomeStatementMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                incomeStatementMIActionPerformed(evt);
+            }
+        });
+        ReportsM.add(incomeStatementMI);
 
         inventoryMI.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        inventoryMI.setMnemonic('i');
+        inventoryMI.setMnemonic('v');
         inventoryMI.setText("Inventory Report");
         inventoryMI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inventoryMIActionPerformed(evt);
             }
         });
-        criticalLevelM1.add(inventoryMI);
+        ReportsM.add(inventoryMI);
 
-        jMenuBar1.add(criticalLevelM1);
+        jMenuBar1.add(ReportsM);
 
         logoutMI.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         logoutMI.setMnemonic('o');
@@ -466,13 +477,45 @@ public class Mainframe extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ordersMIActionPerformed
 
-    private void criticalLevelM1MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_criticalLevelM1MenuSelected
+    private void ReportsMMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_ReportsMMenuSelected
         // TODO add your handling code here:
-    }//GEN-LAST:event_criticalLevelM1MenuSelected
+    }//GEN-LAST:event_ReportsMMenuSelected
 
     private void salesReportMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salesReportMIActionPerformed
-        // TODO add your handling code here:
+        try {
+            this.mainPanel.setVisible(false);
+            if( this.currentPanel != null){
+                this.currentPanel.removeAll();
+            }
+            
+            this.currentPanel = new reports.SalesPanel(this.conn);
+            getContentPane().add(this.currentPanel);
+            
+            validate();
+            repaint();
+        } catch (Exception e) {
+            System.out.println("SALES REPORT PAGE");
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_salesReportMIActionPerformed
+
+    private void incomeStatementMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_incomeStatementMIActionPerformed
+        try {
+            this.mainPanel.setVisible(false);
+            if( this.currentPanel != null){
+                this.currentPanel.removeAll();
+            }
+            
+            this.currentPanel = new reports.IncomeStatementPanel(this.conn);
+            getContentPane().add(this.currentPanel);
+            
+            validate();
+            repaint();
+        } catch (Exception e) {
+            System.out.println("SALES REPORT PAGE");
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_incomeStatementMIActionPerformed
 
     private void inventoryMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inventoryMIActionPerformed
         // TODO add your handling code here:
@@ -518,11 +561,12 @@ public class Mainframe extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu ReportsM;
     private javax.swing.JMenu accountsM;
     private javax.swing.JMenuItem categoryMI;
     private javax.swing.JMenu criticalLevelM;
-    private javax.swing.JMenu criticalLevelM1;
     private javax.swing.JMenuItem customersMI;
+    private javax.swing.JMenuItem incomeStatementMI;
     private javax.swing.JMenuItem inventoryMI;
     private javax.swing.JMenuItem invoiceMI;
     private javax.swing.JMenuBar jMenuBar1;
