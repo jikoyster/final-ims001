@@ -51,7 +51,7 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
         model.setRowCount(0);
         //get total sales from INVOICES table
         try {
-            String salesQuery = "SELECT SUM(TOTAL_AMOUNT) AS TOTALSALES FROM "+ this.tblInvoices;
+            String salesQuery = "SELECT SUM(TOTAL_AMOUNT) AS TOTALSALES FROM "+ this.tblInvoices +" WHERE YEAR(DATEADDED)=YEAR(CURRENT_TIMESTAMP)";
             ResultSet rs = statement.executeQuery(salesQuery);
             while(rs.next()){
                 Object[] rowData =  {"Sales", "", String.format("%,.2f", Double.valueOf(rs.getString("TOTALSALES"))) };
@@ -134,7 +134,7 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {

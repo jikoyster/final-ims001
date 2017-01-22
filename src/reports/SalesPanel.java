@@ -54,8 +54,9 @@ public class SalesPanel extends javax.swing.JPanel {
     public void update_table(){
         try {
             String sql = ""
-                    + "SELECT ID, "+this.tblInvoices+".DATEADDED as DATE, TOTAL_AMOUNT "
-                    + "FROM "+this.tblInvoices+" ";
+                    + "SELECT ID, DATEADDED as DATE, TOTAL_AMOUNT "
+                    + "FROM "+this.tblInvoices+" "
+                    + "WHERE YEAR(DATEADDED) = "+ this.getSelectedYear();
             rs = statement.executeQuery(sql);
             
             DefaultTableModel model = (DefaultTableModel) this.salesReportTable.getModel();
@@ -91,7 +92,7 @@ public class SalesPanel extends javax.swing.JPanel {
         DateFormat format = new SimpleDateFormat("yyyy");
         DefaultComboBoxModel model = (DefaultComboBoxModel) this.yearCB.getModel();
         model.removeAllElements();
-        for(int i=1; i<=10; i++){
+        for(int i=0; i<=10; i++){
             model.addElement( String.valueOf(now.get(Calendar.YEAR)-i) );
         }
         this.yearCB.setModel(model);
@@ -108,8 +109,16 @@ public class SalesPanel extends javax.swing.JPanel {
         }
 //        String.valueOf(totalSales)
         this.totalSalesTF.setText( String.format("%,.2f", totalSales) );
+    }
+    
+    public int getSelectedYear(){
+        int year = 0;
+        try {
+            year = Integer.parseInt((String) this.yearCB.getSelectedItem());
+        } catch (NumberFormatException numberFormatException) {
+        }
         
-        
+        return year;
     }
 
     /**
@@ -158,6 +167,11 @@ public class SalesPanel extends javax.swing.JPanel {
 
         yearCB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         yearCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        yearCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                yearCBItemStateChanged(evt);
+            }
+        });
 
         btn_totalSales.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn_totalSales.setText("TOTAL SALES");
@@ -208,6 +222,10 @@ public class SalesPanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void yearCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearCBItemStateChanged
+        this.update_table();
+    }//GEN-LAST:event_yearCBItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
