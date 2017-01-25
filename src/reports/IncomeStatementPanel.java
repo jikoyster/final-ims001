@@ -100,7 +100,7 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
             //Christmas Gifts
             model.addRow(new Object[]{"<HTML>&EMSP;Christmas Gifts</HTML>", 0, ""});
             //Bookkeeping Fee
-            model.addRow(new Object[]{"<HTML>&EMSP;Bookkeeping Fee</HTML>", 0, getTotal_OperatingExpenses()});
+            model.addRow(new Object[]{"<HTML>&EMSP;Bookkeeping Fee</HTML>", 0, ""});
             
             model.addRow(new Object[]{"", longline, longline});
         //Net Income
@@ -230,7 +230,7 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_yearCBItemStateChanged
 
     private void incomeStatementTableKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_incomeStatementTableKeyTyped
-        this.setTotal_OperatingExpenses();
+        this.setTotal_OperatingExpenses( this.getTotal_OperatingExpenses() );
     }//GEN-LAST:event_incomeStatementTableKeyTyped
 
 
@@ -245,7 +245,7 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
     private double getTotal_OperatingExpenses() {
         double totalOE = 0;
         //9-17 rows for Operating Expenses
-        for (int i=9; i<17; i++){
+        for (int i=9; i<=17; i++){
             try {
                 System.out.println("row0"+i);
                 totalOE += Double.parseDouble( String.valueOf(this.incomeStatementTable.getValueAt(i, 1)) );
@@ -256,7 +256,7 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
         return totalOE;
     }
 
-    private void setTotal_OperatingExpenses() {
-        this.incomeStatementTable.setValueAt(this.getTotal_OperatingExpenses(), 17, 2);
+    private void setTotal_OperatingExpenses(double totalOE) {
+        this.incomeStatementTable.setValueAt( String.format("%,.2f", totalOE), 17, 2);
     }
 }
