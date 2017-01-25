@@ -9,8 +9,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -37,63 +41,67 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
             this.conn = connection;
             this.statement = this.conn.createStatement();
             
-            this.updateTable();
+            this.updateYearCB();
+            this.update_table();
         } catch (SQLException ex) {
             Logger.getLogger(SalesPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public void updateTable(){
+    public void update_table(){
         this.incomeStatementTable.setTableHeader(null);
         setCellRendererRight();
         
         DefaultTableModel model = (DefaultTableModel) this.incomeStatementTable.getModel();
         model.setRowCount(0);
+        
         //get total sales from INVOICES table
         try {
-            String salesQuery = "SELECT SUM(TOTAL_AMOUNT) AS TOTALSALES FROM "+ this.tblInvoices +" WHERE YEAR(DATEADDED)=YEAR(CURRENT_TIMESTAMP)";
+            String salesQuery = "SELECT SUM(TOTAL_AMOUNT) AS TOTALSALES "
+                    + "FROM "+ this.tblInvoices +" "
+                    + "WHERE YEAR(DATEADDED) = "+ this.getSelectedYear();
             ResultSet rs = statement.executeQuery(salesQuery);
             while(rs.next()){
-                Object[] rowData =  {"Sales", "", String.format("%,.2f", Double.valueOf(rs.getString("TOTALSALES"))) };
-                model.addRow( rowData );
+                model.addRow( new Object[]{"<HTML><B COLOR='GREEN'>Sales</B></HTML>", "", String.format("%,.2f", rs.getDouble("TOTALSALES")) } );
             }
         } catch (SQLException ex) {
             Logger.getLogger(IncomeStatementPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         //Cost Of Sales
-        model.addRow(new Object[]{"Cost of Sales","",""});
+        model.addRow(new Object[]{"<HTML><B>Cost of Sales</B></HTML>","", "" });
         //Beginning Inventory
-        model.addRow(new Object[]{"Beginning Inventory", "", ""});
+        model.addRow(new Object[]{"Beginning Inventory", "x", ""});
         //Add: Purchases
-        model.addRow(new Object[]{"Add: Purchases", "", ""});
+        model.addRow(new Object[]{"Add: Purchases", "x", ""});
         //Cost of Goods Available for Sale
-        model.addRow(new Object[]{"Cost of Goods Available for Sale", "", ""});
+        model.addRow(new Object[]{"Cost of Goods Available for Sale", "x", ""});
         //Less: Ending Inventory
-        model.addRow(new Object[]{"Less: Ending Inventory"});
+        model.addRow(new Object[]{"Less: Ending Inventory", "", ""});
         //Gross Sales
-        model.addRow(new Object[]{"Gross Sales"});
+        model.addRow(new Object[]{"Gross Sales", "", ""});
         //Less: Operating Expenses
-        model.addRow(new Object[]{"Less: Operating Expenses"});
+        model.addRow(new Object[]{"Less: Operating Expenses", "", ""});
             //Salaries & Wages
-            model.addRow(new Object[]{"<HTML>&EMSP;Salaries & Wages</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Salaries & Wages</HTML>", "", ""});
             //Taxes & Licenses
-            model.addRow(new Object[]{"<HTML>&EMSP;Taxes & Licenses</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Taxes & Licenses</HTML>", "", ""});
             //Rental
-            model.addRow(new Object[]{"<HTML>&EMSP;Rental</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Rental</HTML>", "", ""});
             //Freight
-            model.addRow(new Object[]{"<HTML>&EMSP;Freight</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Freight</HTML>", "", ""});
             //SSS/PHIC/PAG IBIG
-            model.addRow(new Object[]{"<HTML>&EMSP;SSS/PHIC/PAG IBIG</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;SSS/PHIC/PAG IBIG</HTML>", "", ""});
             //Light & Power
-            model.addRow(new Object[]{"<HTML>&EMSP;Light & Power</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Light & Power</HTML>", "", ""});
             //Donations
-            model.addRow(new Object[]{"<HTML>&EMSP;Donations</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Donations</HTML>", "", ""});
             //Christmas Gifts
-            model.addRow(new Object[]{"<HTML>&EMSP;Christmas Gifts</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Christmas Gifts</HTML>", "", ""});
             //Bookkeeping Fee
-            model.addRow(new Object[]{"<HTML>&EMSP;Bookkeeping Fee</HTML>"});
+            model.addRow(new Object[]{"<HTML>&EMSP;Bookkeeping Fee</HTML>", "", ""});
         //Net Income
-        model.addRow(new Object[]{"Net Income"});
+        model.addRow(new Object[]{"Net Income", "", "xxx"});
         
         //Display total sales
         model.addRow(new Object[]{"","","---"});
@@ -120,6 +128,8 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         incomeStatementTable = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        yearCB = new javax.swing.JComboBox<>();
 
         jLabel1.setFont(new java.awt.Font("Anton", 0, 36)); // NOI18N
         jLabel1.setText("INCOME STATEMENT");
@@ -134,7 +144,7 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -145,15 +155,31 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
         incomeStatementTable.setRowHeight(35);
         jScrollPane1.setViewportView(incomeStatementTable);
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setText("Select a year");
+
+        yearCB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        yearCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        yearCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                yearCBItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(yearCB, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,14 +187,45 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(yearCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    public void updateYearCB(){
+        Calendar now = Calendar.getInstance();
+        DateFormat format = new SimpleDateFormat("yyyy");
+        DefaultComboBoxModel model = (DefaultComboBoxModel) this.yearCB.getModel();
+        model.removeAllElements();
+        for(int i=0; i<=10; i++){
+            model.addElement( String.valueOf(now.get(Calendar.YEAR)-i) );
+        }
+        this.yearCB.setModel(model);
+    }
+    
+    public int getSelectedYear(){
+        int year = 0;
+        try {
+            year = Integer.parseInt((String) this.yearCB.getSelectedItem());
+        } catch (NumberFormatException numberFormatException) {
+        }
+        
+        return year;
+    }
+    
+    private void yearCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearCBItemStateChanged
+        this.update_table();
+    }//GEN-LAST:event_yearCBItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable incomeStatementTable;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JComboBox<String> yearCB;
     // End of variables declaration//GEN-END:variables
 }
