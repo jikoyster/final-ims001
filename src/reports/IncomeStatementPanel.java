@@ -67,42 +67,46 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(IncomeStatementPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        String longline = "-----------------------";
         //Cost Of Sales
         model.addRow(new Object[]{"<HTML><B>Cost of Sales</B></HTML>","", "" });
         //Beginning Inventory
         model.addRow(new Object[]{"Beginning Inventory", "x", ""});
         //Add: Purchases
         model.addRow(new Object[]{"Add: Purchases", "x", ""});
+        model.addRow(new Object[]{"", longline, ""});
         //Cost of Goods Available for Sale
         model.addRow(new Object[]{"Cost of Goods Available for Sale", "x", ""});
         //Less: Ending Inventory
         model.addRow(new Object[]{"Less: Ending Inventory", "", ""});
         //Gross Sales
-        model.addRow(new Object[]{"Gross Sales", "", ""});
+        model.addRow(new Object[]{"Gross Sales", longline, longline});
         //Less: Operating Expenses
         model.addRow(new Object[]{"Less: Operating Expenses", "", ""});
             //Salaries & Wages
-            model.addRow(new Object[]{"<HTML>&EMSP;Salaries & Wages</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Salaries & Wages</HTML>", 0, ""});
             //Taxes & Licenses
-            model.addRow(new Object[]{"<HTML>&EMSP;Taxes & Licenses</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Taxes & Licenses</HTML>", 0, ""});
             //Rental
-            model.addRow(new Object[]{"<HTML>&EMSP;Rental</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Rental</HTML>", 0, ""});
             //Freight
-            model.addRow(new Object[]{"<HTML>&EMSP;Freight</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Freight</HTML>", 0, ""});
             //SSS/PHIC/PAG IBIG
-            model.addRow(new Object[]{"<HTML>&EMSP;SSS/PHIC/PAG IBIG</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;SSS/PHIC/PAG IBIG</HTML>", 0, ""});
             //Light & Power
-            model.addRow(new Object[]{"<HTML>&EMSP;Light & Power</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Light & Power</HTML>", 0, ""});
             //Donations
-            model.addRow(new Object[]{"<HTML>&EMSP;Donations</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Donations</HTML>", 0, ""});
             //Christmas Gifts
-            model.addRow(new Object[]{"<HTML>&EMSP;Christmas Gifts</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Christmas Gifts</HTML>", 0, ""});
             //Bookkeeping Fee
-            model.addRow(new Object[]{"<HTML>&EMSP;Bookkeeping Fee</HTML>", "", ""});
+            model.addRow(new Object[]{"<HTML>&EMSP;Bookkeeping Fee</HTML>", 0, getTotal_OperatingExpenses()});
+            
+            model.addRow(new Object[]{"", longline, longline});
         //Net Income
         model.addRow(new Object[]{"Net Income", "", "xxx"});
-        
+        model.addRow(new Object[]{"", "", "======================"});
+                
         //Display total sales
         model.addRow(new Object[]{"","","---"});
         
@@ -153,6 +157,11 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
         });
         incomeStatementTable.setIntercellSpacing(new java.awt.Dimension(5, 5));
         incomeStatementTable.setRowHeight(35);
+        incomeStatementTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                incomeStatementTableKeyTyped(evt);
+            }
+        });
         jScrollPane1.setViewportView(incomeStatementTable);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -220,6 +229,10 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
         this.update_table();
     }//GEN-LAST:event_yearCBItemStateChanged
 
+    private void incomeStatementTableKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_incomeStatementTableKeyTyped
+        this.setTotal_OperatingExpenses();
+    }//GEN-LAST:event_incomeStatementTableKeyTyped
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable incomeStatementTable;
@@ -228,4 +241,22 @@ public class IncomeStatementPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox<String> yearCB;
     // End of variables declaration//GEN-END:variables
+
+    private double getTotal_OperatingExpenses() {
+        double totalOE = 0;
+        //9-17 rows for Operating Expenses
+        for (int i=9; i<17; i++){
+            try {
+                System.out.println("row0"+i);
+                totalOE += Double.parseDouble( String.valueOf(this.incomeStatementTable.getValueAt(i, 1)) );
+            } catch (NumberFormatException numberFormatException) {
+            }
+        }
+        
+        return totalOE;
+    }
+
+    private void setTotal_OperatingExpenses() {
+        this.incomeStatementTable.setValueAt(this.getTotal_OperatingExpenses(), 17, 2);
+    }
 }
